@@ -5,7 +5,8 @@ import org.springframework.context.annotation.Import;
 
 @Configuration
 @Import({
-    DatasourceConfig.class
+    DatasourceConfig.class,
+    ThymeleafConfig.class
 })
 public class ApplicationConfig {
 
