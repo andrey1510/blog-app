@@ -25,7 +25,7 @@ public class PostServiceImpl implements PostService {
         Post post = Post.builder()
             .title(postDto.getTitle())
             .text(postDto.getText())
-            .image(postDto.getImage())
+            .tags(postDto.getTags())
             .likes(0)
             .build();
         return postRepository.save(post);
@@ -38,7 +38,6 @@ public class PostServiceImpl implements PostService {
             .id(post.getId())
             .title(postDto.getTitle())
             .text(postDto.getText())
-            .image(postDto.getImage())
             .tags(post.getTags())
             .build();
         return postRepository.save(post);

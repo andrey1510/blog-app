@@ -4,6 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import models.Tag;
+
+import java.util.Set;
 
 @RequiredArgsConstructor
 @AllArgsConstructor
@@ -15,6 +18,5 @@ public class PostDto {
 
     private String text;
 
-    private String image;
-
+    private Set<Tag> tags;
 }

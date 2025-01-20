@@ -33,8 +33,6 @@ public class Post {
 
     private String text;
 
-    private String image;
-
     @ManyToMany
     private Set<Tag> tags;
 
