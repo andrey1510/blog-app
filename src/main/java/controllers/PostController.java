@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import services.CommentService;
 import services.PostService;
 
 import java.util.UUID;
@@ -21,6 +23,9 @@ import java.util.UUID;
 public class PostController {
 
     private final PostService postService;
+    private final CommentService commentService;
+
+    // Создание, редактирование, удаление поста.
 
     @GetMapping("/{id}")
     public String getPost(@PathVariable UUID id, Model model) {
@@ -47,6 +52,33 @@ public class PostController {
     public String deletePost(@PathVariable UUID id) {
         postService.deletePost(id);
         return "redirect:/posts";
+    }
+
+    // Лайки; создание, редактирование, удаление комментария.
+
+    @PostMapping("/{id}/comments")
+    public String addComment(@PathVariable UUID id, @ModelAttribute CommentDto commentDto) {
+        commentService.createComment(id, commentDto);
+        return "redirect:/posts/" + id;
+    }
+
+    @PostMapping("/comments/update/{id}")
+    public String editComment(@PathVariable("id") UUID commentId, @ModelAttribute CommentDto commentDto) {
+        commentService.updateComment(commentId, commentDto);
+        return "redirect:/posts/" + commentService.getPostIdByCommentId(commentId);
+    }
+
+    @PostMapping("/comments/delete/{id}")
+    public String deleteComment(@PathVariable("id") UUID commentId) {
+        UUID postId = commentService.getPostIdByCommentId(commentId);
+        commentService.deleteComment(commentId);
+        return "redirect:/posts/" + postId;
+    }
+
+    @PostMapping("/like/{id}")
+    public String likePost(@PathVariable UUID id) {
+        commentService.likePost(id);
+        return "redirect:/posts/" + id;
     }
 
 }
