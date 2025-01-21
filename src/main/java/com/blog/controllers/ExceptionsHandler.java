@@ -22,7 +22,7 @@ public class ExceptionsHandler {
         return new ErrorResponse(ex.getMessage());
     }
 
-    @ExceptionHandler(PostNotFoundException.class)
+    @ExceptionHandler(CommentNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ResponseBody
     public ErrorResponse handleCommentNotFoundException(CommentNotFoundException ex) {
