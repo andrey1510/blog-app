@@ -1,6 +1,6 @@
-package repositories;
+package com.blog.repositories;
 
-import models.Tag;
+import com.blog.models.Tag;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

@@ -1,7 +1,7 @@
-package controllers;
+package com.blog.controllers;
 
-import exceptions.CommentNotFoundException;
-import exceptions.PostNotFoundException;
+import com.blog.exceptions.CommentNotFoundException;
+import com.blog.exceptions.PostNotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

@@ -1,7 +1,7 @@
-package services;
+package com.blog.services;
 
-import dto.PostDto;
-import models.Post;
+import com.blog.dto.PostDto;
+import com.blog.models.Post;
 
 import java.util.UUID;
 

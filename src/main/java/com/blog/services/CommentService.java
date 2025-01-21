@@ -1,7 +1,7 @@
-package services;
+package com.blog.services;
 
-import dto.CommentDto;
-import models.Comment;
+import com.blog.dto.CommentDto;
+import com.blog.models.Comment;
 
 import java.util.UUID;
 

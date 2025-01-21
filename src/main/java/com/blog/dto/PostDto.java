@@ -1,10 +1,10 @@
-package dto;
+package com.blog.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import models.Tag;
+import com.blog.models.Tag;
 
 import java.util.Set;
 

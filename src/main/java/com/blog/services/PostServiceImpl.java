@@ -1,11 +1,11 @@
-package services;
+package com.blog.services;
 
-import dto.PostDto;
-import exceptions.PostNotFoundException;
+import com.blog.dto.PostDto;
+import com.blog.exceptions.PostNotFoundException;
 import lombok.RequiredArgsConstructor;
-import models.Post;
+import com.blog.models.Post;
 import org.springframework.stereotype.Service;
-import repositories.PostRepository;
+import com.blog.repositories.PostRepository;
 
 import java.util.UUID;
 

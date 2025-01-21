@@ -1,9 +1,9 @@
-package controllers;
+package com.blog.controllers;
 
-import dto.CommentDto;
-import dto.PostDto;
+import com.blog.dto.CommentDto;
+import com.blog.dto.PostDto;
 import lombok.RequiredArgsConstructor;
-import models.Post;
+import com.blog.models.Post;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,9 +11,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import services.CommentService;
-import services.PostService;
+import com.blog.services.CommentService;
+import com.blog.services.PostService;
 
 import java.util.UUID;
 

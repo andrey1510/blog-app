@@ -1,14 +1,14 @@
-package services;
+package com.blog.services;
 
-import dto.CommentDto;
-import exceptions.CommentNotFoundException;
-import exceptions.PostNotFoundException;
+import com.blog.dto.CommentDto;
+import com.blog.exceptions.CommentNotFoundException;
+import com.blog.exceptions.PostNotFoundException;
 import lombok.RequiredArgsConstructor;
-import models.Comment;
-import models.Post;
+import com.blog.models.Comment;
+import com.blog.models.Post;
 import org.springframework.stereotype.Service;
-import repositories.CommentRepository;
-import repositories.PostRepository;
+import com.blog.repositories.CommentRepository;
+import com.blog.repositories.PostRepository;
 
 import java.util.UUID;
 
