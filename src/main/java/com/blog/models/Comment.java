@@ -3,6 +3,7 @@ package com.blog.models;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
@@ -12,7 +13,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
-import java.util.UUID;
 
 @Entity
 @Table(name = "comments")
@@ -23,13 +23,11 @@ import java.util.UUID;
 @Builder
 public class Comment {
     @Id
-    @GeneratedValue
-    private UUID id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
 
     private String text;
 
     @ManyToOne
     private Post post;
-
-
 }

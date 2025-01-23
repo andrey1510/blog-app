@@ -3,6 +3,7 @@ package com.blog.models;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
@@ -15,7 +16,6 @@ import lombok.Setter;
 
 import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 
 @Entity
 @Table(name = "posts")
@@ -26,12 +26,14 @@ import java.util.UUID;
 @Builder
 public class Post {
     @Id
-    @GeneratedValue
-    private UUID id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
 
     private String title;
 
     private String text;
+
+    //ToDo image
 
     @ManyToMany
     private Set<Tag> tags;

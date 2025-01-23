@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Лента постов</title>
+    <script>
+        function togglePostForm() {
+            const form = document.getElementById('new-post-form');
+            form.style.display = form.style.display === 'none' ? 'block' : 'none';
+        }
+    </script>
+</head>
+<body>
+<h1>Лента постов</h1>
+
+<div>
+    <ul>
+        <li th:each="post : ${posts}">
+            <a th:href="@{/posts/{id}(id=${post.id})}" th:text="${post.title}"></a>
+        </li>
+    </ul>
+</div>
+
+<button onclick="togglePostForm()">Добавить пост</button>
+
+<div id="new-post-form" style="display: none;">
+    <form th:action="@{/posts}" method="post">
+        <label for="title">Название поста:</label>
+        <input type="text" id="title" name="title" required>
+
+        <label for="text">Текст поста:</label>
+        <textarea id="text" name="text" required></textarea>
+
+        <label for="tags">Теги (через запятую):</label>
+        <input type="text" id="tags" name="tags">
+
+        <button type="submit">Сохранить</button>
+    </form>
+</div>
+</body>
+</html>

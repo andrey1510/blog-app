@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import com.blog.repositories.CommentRepository;
 import com.blog.repositories.PostRepository;
 
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -20,7 +19,7 @@ public class CommentServiceImpl implements CommentService {
     private final PostRepository postRepository;
 
     @Override
-    public Comment createComment(UUID id, CommentDto commentDto) {
+    public Comment createComment(Integer id, CommentDto commentDto) {
         Post post = postRepository.findById(id).orElseThrow(() -> new PostNotFoundException("Пост не найден."));
         return commentRepository.save(Comment.builder()
             .text(commentDto.getText())
@@ -29,7 +28,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public Comment updateComment(UUID id, CommentDto commentDto) {
+    public Comment updateComment(Integer id, CommentDto commentDto) {
         Comment comment = commentRepository.findById(id)
             .orElseThrow(() -> new CommentNotFoundException("Комментарий не найден."));;
         comment.setText(commentDto.getText());
@@ -37,14 +36,14 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public void deleteComment(UUID commentId) {
+    public void deleteComment(Integer commentId) {
         Comment comment = commentRepository.findById(commentId)
             .orElseThrow(() -> new CommentNotFoundException("Комментарий не найден."));
         commentRepository.delete(comment);
     }
 
     @Override
-    public void likePost(UUID postId) {
+    public void likePost(Integer postId) {
         Post post = postRepository.findById(postId)
             .orElseThrow(() -> new RuntimeException("Пост не найден."));
         post.setLikes(post.getLikes() + 1);
@@ -52,7 +51,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public UUID getPostIdByCommentId(UUID commentId) {
+    public Integer getPostIdByCommentId(Integer commentId) {
         return commentRepository.findById(commentId)
             .orElseThrow(() -> new RuntimeException("Комментарий не найден.")).getPost().getId();
     }
