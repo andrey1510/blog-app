@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import com.blog.repositories.PostRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Set;
@@ -25,6 +26,7 @@ public class PostServiceImpl implements PostService {
     private final TagRepository tagRepository;
 
     @Override
+    @Transactional(readOnly = true)
     public Page<Post> getPosts(String tag, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
         return (tag == null || tag.isEmpty())
@@ -33,12 +35,21 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Post getPostById(Integer id) {
-        return postRepository.findById(id).orElseThrow(() -> new PostNotFoundException("Пост не найден."));
+
+        Post post = postRepository.findById(id).orElseThrow(() -> new PostNotFoundException("Пост не найден."));
+        System.out.println("service get");
+        System.out.println(post);
+        return post;
     }
 
     @Override
+    @Transactional
     public Post createPost(PostDto postDto) {
+        System.out.println("service create");
+        System.out.println(postDto);
+
         Set<Tag> tags = postDto.getParsedTags().stream()
             .map(tag -> tagRepository.findByName(tag.getName()).orElseGet(() -> tagRepository.save(tag)))
             .collect(Collectors.toSet());
@@ -52,6 +63,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    @Transactional
     public Post updatePost(Integer id, PostDto postDto) {
         Set<Tag> tags = postDto.getParsedTags().stream()
             .map(tag -> tagRepository.findByName(tag.getName()).orElseGet(() -> tagRepository.save(tag)))
@@ -67,11 +79,13 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    @Transactional
     public void deletePost(Integer id) {
         postRepository.deleteById(id);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Post> getAllPosts(){
         return postRepository.findAll();
     }

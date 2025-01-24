@@ -1,40 +1,29 @@
 <!DOCTYPE html>
 <html lang="ru" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Пост</title>
+    <title th:text="'Пост: ' + ${post.title}"></title>
     <script>
         function enableCommentEdit(commentId) {
-            const textElement = document.getElementById('comment-text-' + commentId);
-            const inputElement = document.getElementById('comment-input-' + commentId);
-
-            textElement.style.display = 'none';
-            inputElement.style.display = 'inline';
-            inputElement.focus();
+            document.getElementById('comment-text-' + commentId).style.display = 'none';
+            const input = document.getElementById('comment-input-' + commentId);
+            input.style.display = 'inline';
+            input.focus();
         }
 
         function saveComment(commentId) {
-            const inputElement = document.getElementById('comment-input-' + commentId);
-            const text = inputElement.value;
+            const text = document.getElementById('comment-input-' + commentId).value;
             fetch('/posts/comments/update/' + commentId, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ text })
             }).then(() => location.reload());
         }
-
-        document.addEventListener('keydown', function(event) {
-            if (event.ctrlKey && event.key === 'Enter') {
-                const activeInput = document.querySelector('input[type="text"]:focus');
-                if (activeInput) {
-                    saveComment(activeInput.dataset.commentId);
-                }
-            }
-        });
     </script>
 </head>
 <body>
 <h1 th:text="${post.title}"></h1>
-<p th:each="paragraph : ${#strings.split(post.text, '\n')}" th:text="${paragraph}"></p>
+
+<p th:utext="${#strings.replace(#strings.replace(post.text, '\r\n', '<br/>'), '\n', '<br/>')}"></p>
 
 <div>
     <h3>Теги</h3>
@@ -44,28 +33,37 @@
 </div>
 
 <div>
-    <button th:onclick="'window.location.href=\'/posts/delete/' + ${post.id} + '\'">Удалить</button>
-    <button th:onclick="'window.location.href=\'/posts/update/' + ${post.id} + '\'">Редактировать</button>
+    <form th:action="@{/posts/delete/{id}(id=${post.id})}" method="post">
+        <button type="submit">Удалить</button>
+    </form>
+    <button th:onclick="'window.location.href=\'/posts/update/' + ${post.id} + '\''">Редактировать</button>
 </div>
 
 <div>
     <h3>Комментарии</h3>
     <ul>
         <li th:each="comment : ${post.comments}">
-            <span id="comment-text-[[${comment.id}]]" th:text="${comment.text}" onclick="enableCommentEdit([[${comment.id}]])"></span>
+            <span id="comment-text-[[${comment.id}]]"
+                  th:utext="${#strings.replace(#strings.replace(comment.text, '\r\n', '<br/>'), '\n', '<br/>')}"></span>
             <input id="comment-input-[[${comment.id}]]" type="text" style="display: none;" data-comment-id="[[${comment.id}]]">
-            <button th:onclick="'/posts/comments/delete/' + ${comment.id}">Удалить</button>
+            <button type="button" onclick="saveComment([[${comment.id}]])">Сохранить</button>
+            <form th:action="@{/posts/comments/delete/{id}(id=${comment.id})}" method="post">
+                <button type="submit">Удалить</button>
+            </form>
         </li>
     </ul>
 </div>
 
-<form th:action="@{/posts/{id}/comments(id=${post.id})}" method="post">
-    <textarea name="text"></textarea>
+<form th:action="@{/posts/{id}/comments(id=${post.id})}" method="post" th:object="${newComment}">
+    <textarea th:field="*{text}" rows="5" cols="40" required></textarea>
     <button type="submit">Добавить комментарий</button>
 </form>
 
 <div>
-    <button th:onclick="'/posts/like/' + ${post.id}">Лайк (текущие: [[${post.likes}]])</button>
+    <form th:action="@{/posts/like/{id}(id=${post.id})}" method="post">
+        <button type="submit">Лайк (текущие: [[${post.likes}]])</button>
+    </form>
 </div>
+
 </body>
 </html>

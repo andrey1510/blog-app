@@ -40,8 +40,12 @@ public class PostController {
     }
 
     @GetMapping("/{id}")
-    public String getPost(@PathVariable Integer id, Model model) {
+    public String getPost(@PathVariable("id") Integer id, Model model) {
         Post post = postService.getPostById(id);
+
+        System.out.println("contr get");
+        System.out.println(post);
+
         model.addAttribute("post", post);
         model.addAttribute("newComment", new CommentDto());
         return "post";
@@ -51,19 +55,22 @@ public class PostController {
 
     @PostMapping
     public String createPost(@ModelAttribute PostDto postDto) {
+        System.out.println("contr create");
+        System.out.println(postDto);
+
         postService.createPost(postDto);
         return "redirect:/posts";
     }
 
     @PostMapping("/update/{id}")
-    public String updatePost(@PathVariable Integer id,
+    public String updatePost(@PathVariable("id") Integer id,
                              @ModelAttribute PostDto postDto) {
         postService.updatePost(id, postDto);
         return "redirect:/posts/" + id;
     }
 
     @PostMapping("/delete/{id}")
-    public String deletePost(@PathVariable Integer id) {
+    public String deletePost(@PathVariable("id") Integer id) {
         postService.deletePost(id);
         return "redirect:/posts";
     }
@@ -71,7 +78,7 @@ public class PostController {
     // Лайки; создание, редактирование, удаление комментария.
 
     @PostMapping("/{id}/comments")
-    public String createComment(@PathVariable Integer id, @ModelAttribute CommentDto commentDto) {
+    public String createComment(@PathVariable("id") Integer id, @ModelAttribute CommentDto commentDto) {
         commentService.createComment(id, commentDto);
         return "redirect:/posts/" + id;
     }
@@ -84,13 +91,14 @@ public class PostController {
 
     @PostMapping("/comments/delete/{id}")
     public String deleteComment(@PathVariable("id") Integer commentId) {
+        System.out.println(" ---------- delete launched");
         Integer postId = commentService.getPostIdByCommentId(commentId);
         commentService.deleteComment(commentId);
         return "redirect:/posts/" + postId;
     }
 
     @PostMapping("/like/{id}")
-    public String likePost(@PathVariable Integer id) {
+    public String likePost(@PathVariable("id") Integer id) {
         commentService.likePost(id);
         return "redirect:/posts/" + id;
     }

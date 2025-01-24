@@ -9,6 +9,7 @@ import com.blog.models.Post;
 import org.springframework.stereotype.Service;
 import com.blog.repositories.CommentRepository;
 import com.blog.repositories.PostRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
@@ -19,6 +20,7 @@ public class CommentServiceImpl implements CommentService {
     private final PostRepository postRepository;
 
     @Override
+    @Transactional
     public Comment createComment(Integer id, CommentDto commentDto) {
         Post post = postRepository.findById(id).orElseThrow(() -> new PostNotFoundException("Пост не найден."));
         return commentRepository.save(Comment.builder()
@@ -28,6 +30,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
+    @Transactional
     public Comment updateComment(Integer id, CommentDto commentDto) {
         Comment comment = commentRepository.findById(id)
             .orElseThrow(() -> new CommentNotFoundException("Комментарий не найден."));;
@@ -36,13 +39,20 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
+    @Transactional
     public void deleteComment(Integer commentId) {
         Comment comment = commentRepository.findById(commentId)
             .orElseThrow(() -> new CommentNotFoundException("Комментарий не найден."));
+
+        Post post = comment.getPost();
+        post.getComments().remove(comment);
+        postRepository.save(post);
+
         commentRepository.delete(comment);
     }
 
     @Override
+    @Transactional
     public void likePost(Integer postId) {
         Post post = postRepository.findById(postId)
             .orElseThrow(() -> new RuntimeException("Пост не найден."));
@@ -51,6 +61,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Integer getPostIdByCommentId(Integer commentId) {
         return commentRepository.findById(commentId)
             .orElseThrow(() -> new RuntimeException("Комментарий не найден.")).getPost().getId();
