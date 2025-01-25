@@ -12,10 +12,10 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 
 import java.util.List;
 import java.util.Set;
@@ -26,6 +26,7 @@ import java.util.Set;
 @AllArgsConstructor
 @Getter
 @Setter
+@Data
 @Builder
 public class Post {
     @Id
@@ -36,7 +37,7 @@ public class Post {
 
     private String text;
 
-    //ToDo image
+    private String imagePath;
 
     @ManyToMany(fetch = FetchType.EAGER)
     private Set<Tag> tags;

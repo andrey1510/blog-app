@@ -21,6 +21,13 @@
             <param-value>com.blog.WebConfiguration</param-value>
         </init-param>
         <load-on-startup>1</load-on-startup>
+
+        <multipart-config>
+            <max-file-size>3145728</max-file-size> <!-- 3 MB -->
+            <max-request-size>10485760</max-request-size> <!-- 10 MB -->
+            <file-size-threshold>0</file-size-threshold>
+        </multipart-config>
+
     </servlet>
 
     <!-- DispatcherServlet обрабатывает все запросы -->

@@ -25,6 +25,17 @@
 
 <p th:utext="${#strings.replace(#strings.replace(post.text, '\r\n', '<br/>'), '\n', '<br/>')}"></p>
 
+<!-- Отображение изображения поста -->
+<div>
+<!--    <h3>Изображение</h3>-->
+    <div th:if="${post.imagePath != null}">
+        <img th:src="@{'/uploads/' + ${post.imagePath}}" alt="Изображение поста" style="max-width: 100%; height: auto;">
+    </div>
+    <div th:if="${post.imagePath == null}">
+        <p> </p>
+    </div>
+</div>
+
 <div>
     <h3>Теги</h3>
     <ul>

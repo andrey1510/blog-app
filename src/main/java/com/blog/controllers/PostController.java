@@ -5,6 +5,7 @@ import com.blog.dto.PostDto;
 import com.blog.services.TagService;
 import lombok.RequiredArgsConstructor;
 import com.blog.models.Post;
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,6 +17,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import com.blog.services.CommentService;
 import com.blog.services.PostService;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -42,10 +45,6 @@ public class PostController {
     @GetMapping("/{id}")
     public String getPost(@PathVariable("id") Integer id, Model model) {
         Post post = postService.getPostById(id);
-
-        System.out.println("contr get");
-        System.out.println(post);
-
         model.addAttribute("post", post);
         model.addAttribute("newComment", new CommentDto());
         return "post";
@@ -54,17 +53,18 @@ public class PostController {
     // Создание, редактирование, удаление поста.
 
     @PostMapping
-    public String createPost(@ModelAttribute PostDto postDto) {
-        System.out.println("contr create");
-        System.out.println(postDto);
-
+    public String createPost(@ModelAttribute PostDto postDto,
+                             @RequestParam(value = "image", required = false) MultipartFile image) {
+        postDto.setImage(image);
         postService.createPost(postDto);
         return "redirect:/posts";
     }
 
     @PostMapping("/update/{id}")
     public String updatePost(@PathVariable("id") Integer id,
-                             @ModelAttribute PostDto postDto) {
+                             @ModelAttribute PostDto postDto,
+                             @RequestParam(value = "image", required = false) MultipartFile image) {
+        postDto.setImage(image);
         postService.updatePost(id, postDto);
         return "redirect:/posts/" + id;
     }
@@ -91,7 +91,6 @@ public class PostController {
 
     @PostMapping("/comments/delete/{id}")
     public String deleteComment(@PathVariable("id") Integer commentId) {
-        System.out.println(" ---------- delete launched");
         Integer postId = commentService.getPostIdByCommentId(commentId);
         commentService.deleteComment(commentId);
         return "redirect:/posts/" + postId;

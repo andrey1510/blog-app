@@ -23,7 +23,7 @@
 <button onclick="togglePostForm()">Добавить пост</button>
 
 <div id="new-post-form" style="display: none;">
-    <form th:action="@{/posts}" method="post">
+    <form th:action="@{/posts}" method="post" enctype="multipart/form-data">
         <label for="title">Название поста:</label>
         <input type="text" id="title" name="title" required>
 
@@ -32,6 +32,9 @@
 
         <label for="tags">Теги (через запятую):</label>
         <input type="text" id="tags" name="tags">
+
+        <label for="image">Загрузить изображение:</label>
+        <input type="file" id="image" name="image" accept=".jpg, .jpeg, .png">
 
         <button type="submit">Сохранить</button>
     </form>

@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import com.blog.models.Tag;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Arrays;
 import java.util.Set;
@@ -19,6 +20,8 @@ public class PostDto {
     private String title;
 
     private String text;
+
+    private MultipartFile image;
 
     private String tags;
 
