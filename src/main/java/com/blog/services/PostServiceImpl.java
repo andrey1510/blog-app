@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -33,13 +32,20 @@ public class PostServiceImpl implements PostService {
 
     private static final String UPLOAD_DIRECTORY = System.getProperty("catalina.base") + "/uploads/";
 
+//    @Override
+//    @Transactional(readOnly = true)
+//    public Page<Post> getPosts(String tag, int page, int size) {
+//        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
+//        return (tag == null || tag.isEmpty())
+//            ? postRepository.findAll(pageable)
+//            : postRepository.findByTagsName(tag, pageable);
+//    }
+
     @Override
     @Transactional(readOnly = true)
-    public Page<Post> getPosts(String tag, int page, int size) {
+    public Page<Post> getAllPosts(int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
-        return (tag == null || tag.isEmpty())
-            ? postRepository.findAll(pageable)
-            : postRepository.findByTagsName(tag, pageable);
+        return postRepository.findAll(pageable);
     }
 
     @Override
@@ -110,12 +116,6 @@ public class PostServiceImpl implements PostService {
     public void deletePost(Integer id) {
         ImageUtils.deleteImageIfExists(getPostById(id).getImagePath());
         postRepository.deleteById(id);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<Post> getAllPosts(){
-        return postRepository.findAll();
     }
 
     private void validateImage(MultipartFile file) {

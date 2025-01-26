@@ -3,10 +3,13 @@ package com.blog.services;
 import com.blog.dto.PostDto;
 import com.blog.models.Post;
 import org.springframework.data.domain.Page;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 
 public interface PostService {
-    Page<Post> getPosts(String tag, int page, int size);
+
+    Page<Post> getAllPosts(int page, int size);
 
     Post getPostById(Integer id);
 
@@ -16,7 +19,4 @@ public interface PostService {
 
     void deletePost(Integer id);
 
-
-
-    List<Post> getAllPosts();
 }

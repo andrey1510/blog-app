@@ -3,9 +3,10 @@ package com.blog.controllers;
 import com.blog.dto.CommentDto;
 import com.blog.dto.PostDto;
 import com.blog.services.TagService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import com.blog.models.Post;
-import org.apache.commons.io.FilenameUtils;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,8 +21,6 @@ import com.blog.services.PostService;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
-
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/posts")
@@ -32,13 +31,21 @@ public class PostController {
     private final TagService tagService;
 
     // Лента постов, переход к посту и созданию поста
-    //ToDo pagination, post preview, delete/update controls
+    //ToDo post preview, delete/update controls
 
     @GetMapping
-    public String getPosts(Model model) {
-        List<Post> posts = postService.getAllPosts();
-        model.addAttribute("posts", posts);
-        model.addAttribute("post", new PostDto());
+    public String getPosts(@RequestParam(value = "page", defaultValue = "0") int page,
+                           @RequestParam(value = "size", defaultValue = "10") int size,
+                           HttpServletRequest request,
+                           Model model) {
+        String contextPath = request.getContextPath();
+
+        Page<Post> posts = postService.getAllPosts(page, size);
+        model.addAttribute("contextPath", contextPath);
+        model.addAttribute("posts", posts.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", posts.getTotalPages());
+        model.addAttribute("pageSize", size);
         return "posts";
     }
 

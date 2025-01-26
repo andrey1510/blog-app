@@ -7,6 +7,14 @@
             const form = document.getElementById('new-post-form');
             form.style.display = form.style.display === 'none' ? 'block' : 'none';
         }
+
+        function changePageSize() {
+            const size = document.getElementById('pageSizeSelector').value;
+            const currentPage = /*[[${currentPage}]]*/ 0;
+            const contextPath = /*[[${contextPath}]]*/ '';
+            window.location.href = `${contextPath}/posts?page=${currentPage}&size=${size}`;
+        }
+
     </script>
 </head>
 <body>
@@ -18,6 +26,29 @@
             <a th:href="@{/posts/{id}(id=${post.id})}" th:text="${post.title}"></a>
         </li>
     </ul>
+</div>
+<p th:text="${contextPath}"></p>
+<div>
+    <span th:text="'Страница ' + (${currentPage + 1}) + ' из ' + ${totalPages}"></span>
+    <nav>
+        <ul>
+            <li th:if="${currentPage > 0}">
+                <a th:href="@{/posts(page=${currentPage - 1}, size=${pageSize})}">Предыдущая</a>
+            </li>
+            <li th:if="${currentPage < totalPages - 1}">
+                <a th:href="@{/posts(page=${currentPage + 1}, size=${pageSize})}">Следующая</a>
+            </li>
+        </ul>
+    </nav>
+</div>
+
+<div>
+    <label for="pageSizeSelector">Постов на странице:</label>
+    <select id="pageSizeSelector" onchange="changePageSize()">
+        <option th:value="10" th:selected="${pageSize == 10}">10</option>
+        <option th:value="20" th:selected="${pageSize == 20}">20</option>
+        <option th:value="50" th:selected="${pageSize == 50}">50</option>
+    </select>
 </div>
 
 <button onclick="togglePostForm()">Добавить пост</button>
