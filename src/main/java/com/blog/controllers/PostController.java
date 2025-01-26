@@ -36,12 +36,8 @@ public class PostController {
     @GetMapping
     public String getPosts(@RequestParam(value = "page", defaultValue = "0") int page,
                            @RequestParam(value = "size", defaultValue = "10") int size,
-                           HttpServletRequest request,
                            Model model) {
-        String contextPath = request.getContextPath();
-
         Page<Post> posts = postService.getAllPosts(page, size);
-        model.addAttribute("contextPath", contextPath);
         model.addAttribute("posts", posts.getContent());
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", posts.getTotalPages());

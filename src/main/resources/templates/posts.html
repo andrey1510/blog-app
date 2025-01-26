@@ -2,24 +2,22 @@
 <html lang="ru" xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Лента постов</title>
-    <script>
+    <script th:inline="javascript">
         function togglePostForm() {
             const form = document.getElementById('new-post-form');
             form.style.display = form.style.display === 'none' ? 'block' : 'none';
         }
 
-        function changePageSize() {
-            const size = document.getElementById('pageSizeSelector').value;
-            const currentPage = /*[[${currentPage}]]*/ 0;
-            const contextPath = /*[[${contextPath}]]*/ '';
-            window.location.href = `${contextPath}/posts?page=${currentPage}&size=${size}`;
+        function changePageSize(selectElement) {
+            const url = selectElement.options[selectElement.selectedIndex].getAttribute('data-url');
+            if (url) {
+                window.location.href = url;
+            }
         }
-
     </script>
 </head>
 <body>
 <h1>Лента постов</h1>
-
 <div>
     <ul>
         <li th:each="post : ${posts}">
@@ -27,7 +25,6 @@
         </li>
     </ul>
 </div>
-<p th:text="${contextPath}"></p>
 <div>
     <span th:text="'Страница ' + (${currentPage + 1}) + ' из ' + ${totalPages}"></span>
     <nav>
@@ -41,32 +38,28 @@
         </ul>
     </nav>
 </div>
-
 <div>
     <label for="pageSizeSelector">Постов на странице:</label>
-    <select id="pageSizeSelector" onchange="changePageSize()">
-        <option th:value="10" th:selected="${pageSize == 10}">10</option>
-        <option th:value="20" th:selected="${pageSize == 20}">20</option>
-        <option th:value="50" th:selected="${pageSize == 50}">50</option>
+    <select id="pageSizeSelector" onchange="changePageSize(this)">
+        <option th:value="2" th:selected="${pageSize == 2}"
+                th:data-url="@{/posts(page=${currentPage}, size=2)}">2</option>
+        <option th:value="3" th:selected="${pageSize == 3}"
+                th:data-url="@{/posts(page=${currentPage}, size=3)}">3</option>
+        <option th:value="50" th:selected="${pageSize == 50}"
+                th:data-url="@{/posts(page=${currentPage}, size=50)}">50</option>
     </select>
 </div>
-
 <button onclick="togglePostForm()">Добавить пост</button>
-
 <div id="new-post-form" style="display: none;">
     <form th:action="@{/posts}" method="post" enctype="multipart/form-data">
         <label for="title">Название поста:</label>
         <input type="text" id="title" name="title" required>
-
         <label for="text">Текст поста:</label>
         <textarea id="text" name="text" required></textarea>
-
         <label for="tags">Теги (через запятую):</label>
         <input type="text" id="tags" name="tags">
-
         <label for="image">Загрузить изображение:</label>
         <input type="file" id="image" name="image" accept=".jpg, .jpeg, .png">
-
         <button type="submit">Сохранить</button>
     </form>
 </div>
