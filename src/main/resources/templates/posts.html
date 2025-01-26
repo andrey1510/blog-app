@@ -17,9 +17,11 @@
 
         function filterByTag(selectElement) {
             const tag = selectElement.value;
-            let url = '?page=' + /*[[${currentPage}]]*/ 0 + '&size=' + /*[[${pageSize}]]*/ 10;
+            let url = '?page=0&size=' + /*[[${pageSize}]]*/ 0;
             if (tag) {
                 url += '&tag=' + encodeURIComponent(tag);
+            } else {
+                url = '?page=0&size=' + /*[[${pageSize}]]*/ 0;
             }
             window.location.href = url;
         }
