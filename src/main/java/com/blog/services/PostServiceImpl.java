@@ -32,14 +32,12 @@ public class PostServiceImpl implements PostService {
 
     private static final String UPLOAD_DIRECTORY = System.getProperty("catalina.base") + "/uploads/";
 
-//    @Override
-//    @Transactional(readOnly = true)
-//    public Page<Post> getPosts(String tag, int page, int size) {
-//        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
-//        return (tag == null || tag.isEmpty())
-//            ? postRepository.findAll(pageable)
-//            : postRepository.findByTagsName(tag, pageable);
-//    }
+    @Override
+    @Transactional(readOnly = true)
+    public Page<Post> getPostsByTag(String tag, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
+        return postRepository.findByTagsName(tag, pageable);
+    }
 
     @Override
     @Transactional(readOnly = true)
@@ -137,6 +135,4 @@ public class PostServiceImpl implements PostService {
             throw new RuntimeException("Ошибка при сохранении файла: " + relativePath, e);
         }
     }
-
-
 }

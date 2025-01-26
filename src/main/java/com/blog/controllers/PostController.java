@@ -3,7 +3,6 @@ package com.blog.controllers;
 import com.blog.dto.CommentDto;
 import com.blog.dto.PostDto;
 import com.blog.services.TagService;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import com.blog.models.Post;
 import org.springframework.data.domain.Page;
@@ -36,12 +35,23 @@ public class PostController {
     @GetMapping
     public String getPosts(@RequestParam(value = "page", defaultValue = "0") int page,
                            @RequestParam(value = "size", defaultValue = "10") int size,
+                           @RequestParam(value = "tag", required = false) String tag,
                            Model model) {
-        Page<Post> posts = postService.getAllPosts(page, size);
+        Page<Post> posts;
+        if (tag != null && !tag.isEmpty()) {
+            posts = postService.getPostsByTag(tag, page, size);
+            model.addAttribute("selectedTag", tag);
+        } else {
+            posts = postService.getAllPosts(page, size);
+            model.addAttribute("selectedTag", null);
+        }
+
         model.addAttribute("posts", posts.getContent());
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", posts.getTotalPages());
         model.addAttribute("pageSize", size);
+        model.addAttribute("tags", tagService.getAllTags());
+
         return "posts";
     }
 

@@ -9,6 +9,8 @@ import java.util.List;
 
 public interface PostService {
 
+    Page<Post> getPostsByTag(String tag, int page, int size);
+
     Page<Post> getAllPosts(int page, int size);
 
     Post getPostById(Integer id);

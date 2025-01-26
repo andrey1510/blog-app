@@ -14,6 +14,15 @@
                 window.location.href = url;
             }
         }
+
+        function filterByTag(selectElement) {
+            const tag = selectElement.value;
+            let url = '?page=' + /*[[${currentPage}]]*/ 0 + '&size=' + /*[[${pageSize}]]*/ 10;
+            if (tag) {
+                url += '&tag=' + encodeURIComponent(tag);
+            }
+            window.location.href = url;
+        }
     </script>
 </head>
 <body>
@@ -30,10 +39,10 @@
     <nav>
         <ul>
             <li th:if="${currentPage > 0}">
-                <a th:href="@{/posts(page=${currentPage - 1}, size=${pageSize})}">Предыдущая</a>
+                <a th:href="@{/posts(page=${currentPage - 1}, size=${pageSize}, tag=${selectedTag != null ? selectedTag : ''})}">Предыдущая</a>
             </li>
             <li th:if="${currentPage < totalPages - 1}">
-                <a th:href="@{/posts(page=${currentPage + 1}, size=${pageSize})}">Следующая</a>
+                <a th:href="@{/posts(page=${currentPage + 1}, size=${pageSize}, tag=${selectedTag != null ? selectedTag : ''})}">Следующая</a>
             </li>
         </ul>
     </nav>
@@ -42,13 +51,24 @@
     <label for="pageSizeSelector">Постов на странице:</label>
     <select id="pageSizeSelector" onchange="changePageSize(this)">
         <option th:value="2" th:selected="${pageSize == 2}"
-                th:data-url="@{/posts(page=${currentPage}, size=2)}">2</option>
+                th:data-url="@{/posts(page=${currentPage}, size=2, tag=${selectedTag != null ? selectedTag : ''})}">2</option>
         <option th:value="3" th:selected="${pageSize == 3}"
-                th:data-url="@{/posts(page=${currentPage}, size=3)}">3</option>
+                th:data-url="@{/posts(page=${currentPage}, size=3, tag=${selectedTag != null ? selectedTag : ''})}">3</option>
         <option th:value="50" th:selected="${pageSize == 50}"
-                th:data-url="@{/posts(page=${currentPage}, size=50)}">50</option>
+                th:data-url="@{/posts(page=${currentPage}, size=50, tag=${selectedTag != null ? selectedTag : ''})}">50</option>
     </select>
 </div>
+
+<!-- Добавление выпадающего списка для фильтрации по тегам -->
+<div>
+    <label for="tagSelector">Фильтр по тегу:</label>
+    <select id="tagSelector" onchange="filterByTag(this)">
+        <option value="" th:selected="${selectedTag == null}">Все теги</option>
+        <option th:each="tag : ${tags}" th:value="${tag.name}"
+                th:selected="${selectedTag == tag.name}" th:text="${tag.name}"></option>
+    </select>
+</div>
+
 <button onclick="togglePostForm()">Добавить пост</button>
 <div id="new-post-form" style="display: none;">
     <form th:action="@{/posts}" method="post" enctype="multipart/form-data">
