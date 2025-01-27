@@ -23,11 +23,12 @@
 <body>
 <h1 th:text="${post.title}"></h1>
 
-<p th:utext="${#strings.replace(#strings.replace(post.text, '\r\n', '<br/>'), '\n', '<br/>')}"></p>
+<!-- Отображение текста поста -->
+<p th:if="${post.text != null}" th:utext="${#strings.replace(#strings.replace(post.text, '\r\n', '<br>'), '\n', '<br>')}" style="white-space: pre-wrap;"></p>
+<p th:if="${post.text == null}">Текст отсутствует.</p>
 
 <!-- Отображение изображения поста -->
 <div>
-<!--    <h3>Изображение</h3>-->
     <div th:if="${post.imagePath != null}">
         <img th:src="@{'/uploads/' + ${post.imagePath}}" alt="Изображение поста" style="max-width: 100%; height: auto;">
     </div>
@@ -35,27 +36,24 @@
         <p> </p>
     </div>
 </div>
-
 <div>
     <h3>Теги</h3>
     <ul>
         <li th:each="tag : ${post.tags}" th:text="${tag.name}"></li>
     </ul>
 </div>
-
 <div>
     <form th:action="@{/posts/delete/{id}(id=${post.id})}" method="post">
         <button type="submit">Удалить</button>
     </form>
     <button th:onclick="'window.location.href=\'/posts/update/' + ${post.id} + '\''">Редактировать</button>
 </div>
-
 <div>
     <h3>Комментарии</h3>
     <ul>
         <li th:each="comment : ${post.comments}">
             <span id="comment-text-[[${comment.id}]]"
-                  th:utext="${#strings.replace(#strings.replace(comment.text, '\r\n', '<br/>'), '\n', '<br/>')}"></span>
+                  th:utext="${#strings.replace(#strings.replace(comment.text, '\r\n', '<br>'), '\n', '<br>')}" style="white-space: pre-wrap;"></span>
             <input id="comment-input-[[${comment.id}]]" type="text" style="display: none;" data-comment-id="[[${comment.id}]]">
             <button type="button" onclick="saveComment([[${comment.id}]])">Сохранить</button>
             <form th:action="@{/posts/comments/delete/{id}(id=${comment.id})}" method="post">
@@ -64,17 +62,14 @@
         </li>
     </ul>
 </div>
-
 <form th:action="@{/posts/{id}/comments(id=${post.id})}" method="post" th:object="${newComment}">
     <textarea th:field="*{text}" rows="5" cols="40" required></textarea>
     <button type="submit">Добавить комментарий</button>
 </form>
-
 <div>
     <form th:action="@{/posts/like/{id}(id=${post.id})}" method="post">
         <button type="submit">Лайк (текущие: [[${post.likes}]])</button>
     </form>
 </div>
-
 </body>
 </html>
