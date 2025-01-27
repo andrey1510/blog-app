@@ -2,6 +2,7 @@ package com.blog.controllers;
 
 import com.blog.dto.CommentDto;
 import com.blog.dto.PostDto;
+import com.blog.dto.PostPreviewDto;
 import com.blog.services.TagService;
 import lombok.RequiredArgsConstructor;
 import com.blog.models.Post;
@@ -20,6 +21,9 @@ import com.blog.services.PostService;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/posts")
@@ -37,18 +41,33 @@ public class PostController {
                            @RequestParam(value = "size", defaultValue = "10") int size,
                            @RequestParam(value = "tag", required = false) String tag,
                            Model model) {
-        Page<Post> posts;
+        Page<Post> postsPage;
         if (tag != null && !tag.isEmpty()) {
-            posts = postService.getPostsByTag(tag, page, size);
+            postsPage = postService.getPostsByTag(tag, page, size);
             model.addAttribute("selectedTag", tag);
         } else {
-            posts = postService.getAllPosts(page, size);
+            postsPage = postService.getAllPosts(page, size);
             model.addAttribute("selectedTag", null);
         }
 
-        model.addAttribute("posts", posts.getContent());
+        List<Post> posts = postsPage.getContent();
+        List<PostPreviewDto> postPreviews = new ArrayList<>();
+
+        for (Post post : posts) {
+            PostPreviewDto previewDto = new PostPreviewDto(
+                post.getId(),
+                post.getTitle(),
+                post.getImagePath(),
+                postService.getPreviewText(post),
+                postService.getCommentCount(post),
+                post.getLikes()
+            );
+            postPreviews.add(previewDto);
+        }
+
+        model.addAttribute("posts", postPreviews);
         model.addAttribute("currentPage", page);
-        model.addAttribute("totalPages", posts.getTotalPages());
+        model.addAttribute("totalPages", postsPage.getTotalPages());
         model.addAttribute("pageSize", size);
         model.addAttribute("tags", tagService.getAllTags());
 

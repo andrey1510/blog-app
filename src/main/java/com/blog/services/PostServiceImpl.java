@@ -116,6 +116,28 @@ public class PostServiceImpl implements PostService {
         postRepository.deleteById(id);
     }
 
+    @Override
+    public String getPreviewText(Post post) {
+        String[] paragraphs = post.getText().split("\n\n");
+        StringBuilder previewText = new StringBuilder();
+
+        String[] lines = paragraphs[0].split("\n");
+        int lineCount = 0;
+
+        for (String line : lines) {
+            if (lineCount >= 3) break;
+            previewText.append(line).append("\n");
+            lineCount++;
+        }
+        return previewText.toString().trim();
+    }
+
+    @Override
+    public int getCommentCount(Post post) {
+        if (post.getComments() == null) return 0;
+        return post.getComments().size();
+    }
+
     private void validateImage(MultipartFile file) {
         if (!ImageUtils.isValidImageExtension(file.getOriginalFilename())) {
             throw new IllegalArgumentException("Недопустимый формат изображения, разрешены: jpeg, jpg, png.");

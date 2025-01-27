@@ -21,4 +21,7 @@ public interface PostService {
 
     void deletePost(Integer id);
 
+    String getPreviewText(Post post);
+
+    int getCommentCount(Post post);
 }

@@ -31,8 +31,23 @@
 <h1>Лента постов</h1>
 <div>
     <ul>
-        <li th:each="post : ${posts}">
-            <a th:href="@{/posts/{id}(id=${post.id})}" th:text="${post.title}"></a>
+        <li th:each="post : ${posts}" style="border-bottom: 1px solid #ccc; padding: 20px;">
+            <h2><a th:href="@{/posts/{id}(id=${post.id})}" th:text="${post.title}"></a></h2>
+
+            <div th:if="${post.imagePath != null}">
+                <img th:src="@{'/uploads/' + ${post.imagePath}}" alt="Изображение поста" style="max-width: 100%; height: auto; max-height: 200px;">
+            </div>
+            <div th:if="${post.imagePath == null}">
+                <p>Нет изображения</p>
+            </div>
+
+            <p th:utext="${#strings.replace(#strings.replace(post.previewText, '\r\n', '<br>'), '\n', '<br>')}"
+               style="white-space: pre-wrap;"></p>
+
+            <div>
+                <span>Комментарии: [[${post.commentCount}]]</span> |
+                <span>Лайки: [[${post.likes}]]</span>
+            </div>
         </li>
     </ul>
 </div>
@@ -60,8 +75,6 @@
                 th:data-url="@{/posts(page=${currentPage}, size=50, tag=${selectedTag != null ? selectedTag : ''})}">50</option>
     </select>
 </div>
-
-<!-- Добавление выпадающего списка для фильтрации по тегам -->
 <div>
     <label for="tagSelector">Фильтр по тегу:</label>
     <select id="tagSelector" onchange="filterByTag(this)">
@@ -70,7 +83,6 @@
                 th:selected="${selectedTag == tag.name}" th:text="${tag.name}"></option>
     </select>
 </div>
-
 <button onclick="togglePostForm()">Добавить пост</button>
 <div id="new-post-form" style="display: none;">
     <form th:action="@{/posts}" method="post" enctype="multipart/form-data">
