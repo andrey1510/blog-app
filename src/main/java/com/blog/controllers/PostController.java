@@ -109,6 +109,11 @@ public class PostController {
         return "redirect:/posts";
     }
 
+    @PostMapping("/return-to-posts")
+    public String returnToPosts() {
+        return "redirect:/posts";
+    }
+
     // Лайки; создание, редактирование, удаление комментария.
 
     @PostMapping("/{id}/comments")

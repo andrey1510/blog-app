@@ -4,11 +4,10 @@
     <title th:text="'Пост: ' + ${post.title}"></title>
     <script th:inline="javascript">
         function enableCommentEdit(commentId) {
-            console.log("Enabling edit for comment ID: " + commentId); // Отладка
+            console.log("Не найден комментарий с таким ID: " + commentId);
             const textSpan = document.getElementById('comment-text-' + commentId);
             const inputField = document.getElementById('comment-input-' + commentId);
             if (textSpan && inputField) {
-                // Заменяем текст на поле ввода
                 textSpan.style.display = 'none';
                 inputField.value = textSpan.textContent.trim();
                 inputField.style.display = 'inline';
@@ -19,7 +18,7 @@
                     }
                 });
             } else {
-                console.error("Не найден комментарий с таким ID: " + commentId);
+                console.error("Ошибка обновления комментария: " + commentId);
             }
         }
 
@@ -65,6 +64,13 @@
     </form>
     <button th:onclick="'window.location.href=\'/posts/update/' + ${post.id} + '\''">Редактировать</button>
 </div>
+
+<div>
+    <form th:action="@{/posts/return-to-posts}" method="post">
+        <button type="submit">Назад к ленте постов</button>
+    </form>
+</div>
+
 <div>
     <h3>Комментарии</h3>
     <ul>
