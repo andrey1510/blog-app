@@ -1,6 +1,7 @@
 package com.blog.services;
 
 import com.blog.dto.CommentDto;
+import com.blog.dto.CommentUpdateDto;
 import com.blog.exceptions.CommentNotFoundException;
 import com.blog.exceptions.PostNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -31,11 +32,11 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Transactional
-    public Comment updateComment(Integer id, CommentDto commentDto) {
-        Comment comment = commentRepository.findById(id)
-            .orElseThrow(() -> new CommentNotFoundException("Комментарий не найден."));;
-        comment.setText(commentDto.getText());
-        return commentRepository.save(comment);
+    public void updateComment(CommentUpdateDto commentUpdateDto) {
+        Comment comment = commentRepository.findById(commentUpdateDto.getId())
+            .orElseThrow(() -> new CommentNotFoundException("Комментарий не найден."));
+        comment.setText(commentUpdateDto.getText());
+        commentRepository.save(comment);
     }
 
     @Override

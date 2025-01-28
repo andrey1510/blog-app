@@ -1,12 +1,15 @@
 package com.blog.controllers;
 
 import com.blog.dto.CommentDto;
+import com.blog.dto.CommentUpdateDto;
 import com.blog.dto.PostDto;
 import com.blog.dto.PostPreviewDto;
+import com.blog.exceptions.CommentNotFoundException;
 import com.blog.services.TagService;
 import lombok.RequiredArgsConstructor;
 import com.blog.models.Post;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -34,7 +37,6 @@ public class PostController {
     private final TagService tagService;
 
     // Лента постов, переход к посту и созданию поста
-    //ToDo post preview, delete/update controls
 
     @GetMapping
     public String getPosts(@RequestParam(value = "page", defaultValue = "0") int page,
@@ -115,10 +117,16 @@ public class PostController {
         return "redirect:/posts/" + id;
     }
 
-    @PostMapping("/comments/update/{id}")
-    public ResponseEntity<?> updateComment(@PathVariable("id") Integer commentId, @RequestBody CommentDto commentDto) {
-        commentService.updateComment(commentId, commentDto);
-        return ResponseEntity.ok().build();
+    @PostMapping("/comments/update")
+    public ResponseEntity<?> updateComment(@RequestBody CommentUpdateDto commentUpdateDto) {
+        try {
+            commentService.updateComment(commentUpdateDto);
+            return ResponseEntity.ok().build();
+        } catch (CommentNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
     }
 
     @PostMapping("/comments/delete/{id}")

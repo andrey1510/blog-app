@@ -2,32 +2,49 @@
 <html lang="ru" xmlns:th="http://www.thymeleaf.org">
 <head>
     <title th:text="'Пост: ' + ${post.title}"></title>
-    <script>
+    <script th:inline="javascript">
         function enableCommentEdit(commentId) {
-            document.getElementById('comment-text-' + commentId).style.display = 'none';
-            const input = document.getElementById('comment-input-' + commentId);
-            input.style.display = 'inline';
-            input.focus();
+            console.log("Enabling edit for comment ID: " + commentId); // Отладка
+            const textSpan = document.getElementById('comment-text-' + commentId);
+            const inputField = document.getElementById('comment-input-' + commentId);
+            if (textSpan && inputField) {
+                // Заменяем текст на поле ввода
+                textSpan.style.display = 'none';
+                inputField.value = textSpan.textContent.trim();
+                inputField.style.display = 'inline';
+                inputField.focus();
+                inputField.addEventListener('keydown', function(event) {
+                    if (event.ctrlKey && event.key === 'Enter') {
+                        saveComment(commentId, inputField.value);
+                    }
+                });
+            } else {
+                console.error("Не найден комментарий с таким ID: " + commentId);
+            }
         }
 
-        function saveComment(commentId) {
-            const text = document.getElementById('comment-input-' + commentId).value;
-            fetch('/posts/comments/update/' + commentId, {
+        function saveComment(commentId, newText) {
+            console.log("Комментарий сохранен с ID: " + commentId + " и текстом: " + newText);
+            fetch(/*[[@{/posts/comments/update}]]*/, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ text })
-            }).then(() => location.reload());
+                body: JSON.stringify({ id: commentId, text: newText })
+            }).then(response => {
+                if (response.ok) {
+                    location.reload();
+                } else {
+                    console.error("Ошибка обновления комментария: " + response.statusText);
+                }
+            }).catch(error => {
+                console.error("Ошибка обновления комментария: ", error);
+            });
         }
     </script>
 </head>
 <body>
 <h1 th:text="${post.title}"></h1>
-
-<!-- Отображение текста поста -->
 <p th:if="${post.text != null}" th:utext="${#strings.replace(#strings.replace(post.text, '\r\n', '<br>'), '\n', '<br>')}" style="white-space: pre-wrap;"></p>
 <p th:if="${post.text == null}">Текст отсутствует.</p>
-
-<!-- Отображение изображения поста -->
 <div>
     <div th:if="${post.imagePath != null}">
         <img th:src="@{'/uploads/' + ${post.imagePath}}" alt="Изображение поста" style="max-width: 100%; height: auto;">
@@ -52,10 +69,13 @@
     <h3>Комментарии</h3>
     <ul>
         <li th:each="comment : ${post.comments}">
-            <span id="comment-text-[[${comment.id}]]"
-                  th:utext="${#strings.replace(#strings.replace(comment.text, '\r\n', '<br>'), '\n', '<br>')}" style="white-space: pre-wrap;"></span>
-            <input id="comment-input-[[${comment.id}]]" type="text" style="display: none;" data-comment-id="[[${comment.id}]]">
-            <button type="button" onclick="saveComment([[${comment.id}]])">Сохранить</button>
+            <span th:id="'comment-text-' + ${comment.id}"
+                  th:utext="${#strings.replace(#strings.replace(comment.text, '\r\n', '<br>'), '\n', '<br>')}"
+                  style="white-space: pre-wrap; cursor: pointer;"
+                  th:onclick="|enableCommentEdit(${comment.id})|"></span>
+
+            <input th:id="'comment-input-' + ${comment.id}" type="text" style="display: none;" data-comment-id="${comment.id}">
+
             <form th:action="@{/posts/comments/delete/{id}(id=${comment.id})}" method="post">
                 <button type="submit">Удалить</button>
             </form>
