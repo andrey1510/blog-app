@@ -1,7 +1,9 @@
 package com.blog.controllers;
 
 import com.blog.exceptions.CommentNotFoundException;
+import com.blog.exceptions.MaxImageSizeExceededException;
 import com.blog.exceptions.PostNotFoundException;
+import com.blog.exceptions.WrongImageTypeException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +28,20 @@ public class ExceptionsHandler {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ResponseBody
     public ErrorResponse handleCommentNotFoundException(CommentNotFoundException ex) {
+        return new ErrorResponse(ex.getMessage());
+    }
+
+    @ExceptionHandler(WrongImageTypeException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
+    public ErrorResponse handleWrongImageTypeException(WrongImageTypeException ex) {
+        return new ErrorResponse(ex.getMessage());
+    }
+
+    @ExceptionHandler(MaxImageSizeExceededException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
+    public ErrorResponse handleMaxImageSizeExceededException(MaxImageSizeExceededException ex) {
         return new ErrorResponse(ex.getMessage());
     }
 

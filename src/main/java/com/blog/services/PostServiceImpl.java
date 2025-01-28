@@ -1,7 +1,9 @@
 package com.blog.services;
 
 import com.blog.dto.PostDto;
+import com.blog.exceptions.MaxImageSizeExceededException;
 import com.blog.exceptions.PostNotFoundException;
+import com.blog.exceptions.WrongImageTypeException;
 import com.blog.models.Tag;
 import com.blog.repositories.TagRepository;
 import com.blog.utils.ImageUtils;
@@ -140,11 +142,11 @@ public class PostServiceImpl implements PostService {
 
     private void validateImage(MultipartFile file) {
         if (!ImageUtils.isValidImageExtension(file.getOriginalFilename())) {
-            throw new IllegalArgumentException("Недопустимый формат изображения, разрешены: jpeg, jpg, png.");
+            throw new WrongImageTypeException("Недопустимый формат изображения, разрешены: jpeg, jpg, png.");
         }
 
         if (!ImageUtils.isValidImageSize(file.getSize())) {
-            throw new IllegalArgumentException("Размер файла не должен превышать 3 МБ.");
+            throw new MaxImageSizeExceededException("Размер файла не должен превышать 3 МБ.");
         }
     }
 
