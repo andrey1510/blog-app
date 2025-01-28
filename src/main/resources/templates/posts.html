@@ -38,7 +38,7 @@
                 <img th:src="@{'/uploads/' + ${post.imagePath}}" alt="Изображение поста" style="max-width: 100%; height: auto; max-height: 200px;">
             </div>
             <div th:if="${post.imagePath == null}">
-                <p>Нет изображения</p>
+                <p>  </p>
             </div>
 
             <p th:utext="${#strings.replace(#strings.replace(post.previewText, '\r\n', '<br>'), '\n', '<br>')}"
