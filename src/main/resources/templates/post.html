@@ -51,7 +51,7 @@
 <p th:if="${post.text == null}">Текст отсутствует.</p>
 <div>
     <div th:if="${post.imagePath != null}">
-        <img th:src="@{'/uploads/' + ${post.imagePath}}" alt="Изображение поста" style="max-width: 100%; height: auto;">
+        <img th:src="@{'/uploads/' + ${post.imagePath}}" alt="Изображение" style="max-width: 100%; height: auto; max-height: 200px;">
     </div>
     <div th:if="${post.imagePath == null}">
         <p> </p>
@@ -65,9 +65,9 @@
 </div>
 <div>
     <form th:action="@{/posts/delete/{id}(id=${post.id})}" method="post">
-        <button type="submit">Удалить</button>
+        <button type="submit">Удалить пост</button>
     </form>
-    <button onclick="togglePostForm()">Редактировать</button>
+    <button onclick="togglePostForm()">Редактировать пост</button>
 </div>
 <div>
     <form th:action="@{/posts/return-to-posts}" method="post">
@@ -84,7 +84,7 @@
                   th:onclick="|enableCommentEdit(${comment.id})|"></span>
             <input th:id="'comment-input-' + ${comment.id}" type="text" style="display: none;" data-comment-id="${comment.id}">
             <form th:action="@{/posts/comments/delete/{id}(id=${comment.id})}" method="post">
-                <button type="submit">Удалить</button>
+                <button type="submit">Удалить комментарий/button>
             </form>
         </li>
     </ul>
@@ -95,7 +95,7 @@
 </form>
 <div>
     <form th:action="@{/posts/like/{id}(id=${post.id})}" method="post">
-        <button type="submit">Лайк (текущие: [[${post.likes}]])</button>
+        <button type="submit">Поставить лайк (всего лайков: [[${post.likes}]])</button>
     </form>
 </div>
 
@@ -109,7 +109,7 @@
         <input type="text" id="tags" name="tags">
         <label for="image">Загрузить изображение:</label>
         <input type="file" id="image" name="image" accept=".jpg, .jpeg, .png">
-        <button type="submit">Сохранить</button>
+        <button type="submit">Сохранить пост</button>
     </form>
 </div>
 </body>

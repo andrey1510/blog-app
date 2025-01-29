@@ -35,7 +35,7 @@
             <h2><a th:href="@{/posts/{id}(id=${post.id})}" th:text="${post.title}"></a></h2>
 
             <div th:if="${post.imagePath != null}">
-                <img th:src="@{'/uploads/' + ${post.imagePath}}" alt="Изображение поста" style="max-width: 100%; height: auto; max-height: 200px;">
+                <img th:src="@{'/uploads/' + ${post.imagePath}}" alt="Изображение" style="max-width: 100%; height: auto; max-height: 200px;">
             </div>
             <div th:if="${post.imagePath == null}">
                 <p>  </p>
@@ -94,7 +94,7 @@
         <input type="text" id="tags" name="tags">
         <label for="image">Загрузить изображение:</label>
         <input type="file" id="image" name="image" accept=".jpg, .jpeg, .png">
-        <button type="submit">Сохранить</button>
+        <button type="submit">Сохранить пост</button>
     </form>
 </div>
 </body>
