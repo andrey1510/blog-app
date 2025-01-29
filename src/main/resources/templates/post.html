@@ -38,6 +38,11 @@
                 console.error("Ошибка обновления комментария: ", error);
             });
         }
+
+        function togglePostForm() {
+            const form = document.getElementById('edit-post-form');
+            form.style.display = form.style.display === 'none' ? 'block' : 'none';
+        }
     </script>
 </head>
 <body>
@@ -62,15 +67,13 @@
     <form th:action="@{/posts/delete/{id}(id=${post.id})}" method="post">
         <button type="submit">Удалить</button>
     </form>
-    <button th:onclick="'window.location.href=\'/posts/update/' + ${post.id} + '\''">Редактировать</button>
+    <button onclick="togglePostForm()">Редактировать</button>
 </div>
-
 <div>
     <form th:action="@{/posts/return-to-posts}" method="post">
         <button type="submit">Назад к ленте постов</button>
     </form>
 </div>
-
 <div>
     <h3>Комментарии</h3>
     <ul>
@@ -79,9 +82,7 @@
                   th:utext="${#strings.replace(#strings.replace(comment.text, '\r\n', '<br>'), '\n', '<br>')}"
                   style="white-space: pre-wrap; cursor: pointer;"
                   th:onclick="|enableCommentEdit(${comment.id})|"></span>
-
             <input th:id="'comment-input-' + ${comment.id}" type="text" style="display: none;" data-comment-id="${comment.id}">
-
             <form th:action="@{/posts/comments/delete/{id}(id=${comment.id})}" method="post">
                 <button type="submit">Удалить</button>
             </form>
@@ -95,6 +96,20 @@
 <div>
     <form th:action="@{/posts/like/{id}(id=${post.id})}" method="post">
         <button type="submit">Лайк (текущие: [[${post.likes}]])</button>
+    </form>
+</div>
+
+<div id="edit-post-form" style="display: none;">
+    <form th:action="@{/posts/update/{id}(id=${post.id})}" method="post" enctype="multipart/form-data" th:object="${postDto}">
+        <label for="title">Название поста:</label>
+        <input type="text" id="title" name="title" required>
+        <label for="text">Текст поста:</label>
+        <textarea id="text" name="text" required></textarea>
+        <label for="tags">Теги (через запятую):</label>
+        <input type="text" id="tags" name="tags">
+        <label for="image">Загрузить изображение:</label>
+        <input type="file" id="image" name="image" accept=".jpg, .jpeg, .png">
+        <button type="submit">Сохранить</button>
     </form>
 </div>
 </body>
