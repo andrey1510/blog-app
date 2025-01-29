@@ -84,14 +84,15 @@ public class PostServiceImpl implements PostService {
     @Transactional
     public Post updatePost(Integer id, PostDto postDto) {
         Post post = getPostById(id);
+        String uniqueFileName = post.getImagePath();
 
         if (postDto.getImage() == null || postDto.getImage().isEmpty()) {
             if (post.getImagePath() != null) {
                 ImageUtils.deleteImageIfExists(post.getImagePath());
+                uniqueFileName = null;
             }
         }
 
-        String uniqueFileName = post.getImagePath();
         MultipartFile newImage = postDto.getImage();
         if (newImage != null && !newImage.isEmpty()) {
             validateImage(newImage);
