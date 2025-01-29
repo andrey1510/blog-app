@@ -7,6 +7,7 @@ import com.blog.exceptions.WrongImageTypeException;
 import com.blog.models.Tag;
 import com.blog.repositories.TagRepository;
 import com.blog.utils.ImageUtils;
+import com.blog.utils.TagsUtils;
 import lombok.RequiredArgsConstructor;
 import com.blog.models.Post;
 import org.springframework.data.domain.Page;
@@ -57,7 +58,7 @@ public class PostServiceImpl implements PostService {
     @Override
     @Transactional
     public Post createPost(PostDto postDto) {
-        Set<Tag> tags = postDto.getParsedTags().stream()
+        Set<Tag> tags = TagsUtils.getParsedTags(postDto.getTags()).stream()
             .map(tag -> tagRepository.findByName(tag.getName()).orElseGet(() -> tagRepository.save(tag)))
             .collect(Collectors.toSet());
 
@@ -99,7 +100,7 @@ public class PostServiceImpl implements PostService {
             ImageUtils.deleteImageIfExists(post.getImagePath());
         }
 
-        Set<Tag> tags = postDto.getParsedTags().stream()
+        Set<Tag> tags = TagsUtils.getParsedTags(postDto.getTags()).stream()
             .map(tag -> tagRepository.findByName(tag.getName()).orElseGet(() -> tagRepository.save(tag)))
             .collect(Collectors.toSet());
 
