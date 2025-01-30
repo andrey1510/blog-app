@@ -25,8 +25,6 @@ import java.util.Set;
 @Table(name = "posts")
 @RequiredArgsConstructor
 @AllArgsConstructor
-@Getter
-@Setter
 @Data
 @Builder
 public class Post {
