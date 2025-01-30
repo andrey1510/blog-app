@@ -84,7 +84,7 @@
                   th:onclick="|enableCommentEdit(${comment.id})|"></span>
             <input th:id="'comment-input-' + ${comment.id}" type="text" style="display: none;" data-comment-id="${comment.id}">
             <form th:action="@{/posts/comments/delete/{id}(id=${comment.id})}" method="post">
-                <button type="submit">Удалить комментарий/button>
+                <button type="submit">Удалить комментарий</button>
             </form>
         </li>
     </ul>

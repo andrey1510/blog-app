@@ -36,7 +36,7 @@ public class PostController {
     private final CommentService commentService;
     private final TagService tagService;
 
-    // Лента постов, переход к посту и созданию поста
+    // Методы для получения постов
 
     @GetMapping
     public String getPosts(@RequestParam(value = "page", defaultValue = "0") int page,
@@ -44,6 +44,7 @@ public class PostController {
                            @RequestParam(value = "tag", required = false) String tag,
                            Model model) {
         Page<Post> postsPage;
+
         if (tag != null && !tag.isEmpty()) {
             postsPage = postService.getPostsByTag(tag, page, size);
             model.addAttribute("selectedTag", tag);
@@ -84,7 +85,7 @@ public class PostController {
         return "post";
     }
 
-    // Создание, редактирование, удаление поста.
+    // Методы для создания, редактирования, удаления поста.
 
     @PostMapping
     public String createPost(@ModelAttribute PostDto postDto,
@@ -114,7 +115,7 @@ public class PostController {
         return "redirect:/posts";
     }
 
-    // Лайки; создание, редактирование, удаление комментария.
+    // Методы для создания, редактирования, удаления комментария
 
     @PostMapping("/{id}/comments")
     public String createComment(@PathVariable("id") Integer id, @ModelAttribute CommentDto commentDto) {
@@ -140,6 +141,8 @@ public class PostController {
         commentService.deleteComment(commentId);
         return "redirect:/posts/" + postId;
     }
+
+    // Проставление лайка
 
     @PostMapping("/like/{id}")
     public String likePost(@PathVariable("id") Integer id) {
