@@ -7,7 +7,6 @@ import com.blog.exceptions.WrongImageTypeException;
 import com.blog.models.Tag;
 import com.blog.repositories.TagRepository;
 import com.blog.utils.ImageUtils;
-import com.blog.utils.TagsUtils;
 import lombok.RequiredArgsConstructor;
 import com.blog.models.Post;
 import org.springframework.data.domain.Page;
@@ -23,8 +22,11 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -55,12 +57,8 @@ public class PostServiceImpl implements PostService {
         return postRepository.findById(id).orElseThrow(() -> new PostNotFoundException("Пост не найден."));
     }
 
-    @Override
     @Transactional
     public Post createPost(PostDto postDto) {
-        Set<Tag> tags = TagsUtils.getParsedTags(postDto.getTags()).stream()
-            .map(tag -> tagRepository.findByName(tag.getName()).orElseGet(() -> tagRepository.save(tag)))
-            .collect(Collectors.toSet());
 
         String uniqueFileName = null;
         MultipartFile image = postDto.getImage();
@@ -73,7 +71,7 @@ public class PostServiceImpl implements PostService {
         Post post = Post.builder()
             .title(postDto.getTitle())
             .text(postDto.getText())
-            .tags(tags)
+            .tags(processTags(postDto.getTags()))
             .imagePath(uniqueFileName)
             .likes(0)
             .build();
@@ -101,13 +99,9 @@ public class PostServiceImpl implements PostService {
             ImageUtils.deleteImageIfExists(post.getImagePath());
         }
 
-        Set<Tag> tags = TagsUtils.getParsedTags(postDto.getTags()).stream()
-            .map(tag -> tagRepository.findByName(tag.getName()).orElseGet(() -> tagRepository.save(tag)))
-            .collect(Collectors.toSet());
-
         post.setTitle(postDto.getTitle());
         post.setText(postDto.getText());
-        post.setTags(tags);
+        post.setTags(processTags(postDto.getTags()));
         post.setImagePath(uniqueFileName);
 
         return postRepository.save(post);
@@ -161,4 +155,30 @@ public class PostServiceImpl implements PostService {
             throw new RuntimeException("Ошибка при сохранении файла: " + relativePath, e);
         }
     }
+
+    private Set<Tag> processTags(String tagString) {
+
+        if (tagString == null || tagString.trim().isEmpty()) return new HashSet<>();
+
+        Set<String> tagNames = Stream.of(tagString.split(","))
+            .map(String::trim)
+            .distinct()
+            .filter(name -> !name.isEmpty())
+            .collect(Collectors.toSet());
+
+        Set<Tag> tags = new HashSet<>();
+
+        for (String tagName : tagNames) {
+            Optional<Tag> tag = tagRepository.findByName(tagName);
+            if (tag.isPresent()) tags.add(tag.get());
+            else {
+                Tag newTag = new Tag();
+                newTag.setName(tagName);
+                tagRepository.save(newTag);
+                tags.add(newTag);
+            }
+        }
+        return tags;
+    }
+
 }
