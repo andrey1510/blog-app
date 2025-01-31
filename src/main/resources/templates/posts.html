@@ -7,14 +7,13 @@
             const form = document.getElementById('new-post-form');
             form.style.display = form.style.display === 'none' ? 'block' : 'none';
         }
-
-        function changePageSize(selectElement) {
-            const url = selectElement.options[selectElement.selectedIndex].getAttribute('data-url');
-            if (url) {
-                window.location.href = url;
+        function changePageSize(size) {
+            let url = '?page=0&size=' + size;
+            if (/*[[${selectedTag}]]*/ '') {
+                url += '&tag=' + encodeURIComponent(/*[[${selectedTag}]]*/ '');
             }
+            window.location.href = url;
         }
-
         function filterByTag(selectElement) {
             const tag = selectElement.value;
             let url = '?page=0&size=' + /*[[${pageSize}]]*/ 0;
@@ -33,20 +32,23 @@
     <ul>
         <li th:each="post : ${posts}" style="border-bottom: 1px solid #ccc; padding: 20px;">
             <h2><a th:href="@{/posts/{id}(id=${post.id})}" th:text="${post.title}"></a></h2>
-
             <div th:if="${post.imagePath != null}">
                 <img th:src="@{'/uploads/' + ${post.imagePath}}" alt="Изображение" style="max-width: 100%; height: auto; max-height: 200px;">
             </div>
             <div th:if="${post.imagePath == null}">
                 <p>  </p>
             </div>
-
             <p th:utext="${#strings.replace(#strings.replace(post.previewText, '\r\n', '<br>'), '\n', '<br>')}"
                style="white-space: pre-wrap;"></p>
-
             <div>
                 <span>Комментарии: [[${post.commentCount}]]</span> |
                 <span>Лайки: [[${post.likes}]]</span>
+            </div>
+            <div>
+                <h4>Теги</h4>
+                <ul>
+                    <li th:each="tag : ${post.tags}" th:text="${tag.name}"></li>
+                </ul>
             </div>
         </li>
     </ul>
@@ -66,19 +68,16 @@
 </div>
 <div>
     <label for="pageSizeSelector">Постов на странице:</label>
-    <select id="pageSizeSelector" onchange="changePageSize(this)">
-        <option th:value="2" th:selected="${pageSize == 2}"
-                th:data-url="@{/posts(page=${currentPage}, size=2, tag=${selectedTag != null ? selectedTag : ''})}">2</option>
-        <option th:value="3" th:selected="${pageSize == 3}"
-                th:data-url="@{/posts(page=${currentPage}, size=3, tag=${selectedTag != null ? selectedTag : ''})}">3</option>
-        <option th:value="50" th:selected="${pageSize == 50}"
-                th:data-url="@{/posts(page=${currentPage}, size=50, tag=${selectedTag != null ? selectedTag : ''})}">50</option>
-    </select>
+    <div>
+        <button onclick="changePageSize(10)" th:class="${pageSize == 10 ? 'active' : ''}">10</button>
+        <button onclick="changePageSize(20)" th:class="${pageSize == 20 ? 'active' : ''}">20</button>
+        <button onclick="changePageSize(50)" th:class="${pageSize == 50 ? 'active' : ''}">50</button>
+    </div>
 </div>
 <div>
     <label for="tagSelector">Фильтр по тегу:</label>
     <select id="tagSelector" onchange="filterByTag(this)">
-        <option value="" th:selected="${selectedTag == null}">Все теги</option>
+        <option value="" th:selected="${selectedTag == null}">Все посты</option>
         <option th:each="tag : ${tags}" th:value="${tag.name}"
                 th:selected="${selectedTag == tag.name}" th:text="${tag.name}"></option>
     </select>

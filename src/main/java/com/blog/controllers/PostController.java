@@ -63,7 +63,8 @@ public class PostController {
                 post.getImagePath(),
                 postService.getPreviewText(post),
                 postService.getCommentCount(post),
-                post.getLikes()
+                post.getLikes(),
+                post.getTags()
             );
             postPreviews.add(previewDto);
         }

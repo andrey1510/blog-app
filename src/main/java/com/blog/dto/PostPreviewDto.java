@@ -1,9 +1,12 @@
 package com.blog.dto;
 
+import com.blog.models.Tag;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+
+import java.util.Set;
 
 @RequiredArgsConstructor
 @AllArgsConstructor
@@ -22,5 +25,7 @@ public class PostPreviewDto {
     private int commentCount;
 
     private int likes;
+
+    private Set<Tag> tags;
 
 }
