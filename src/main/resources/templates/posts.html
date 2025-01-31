@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Лента постов</title>
+    <script th:inline="javascript">
+        function togglePostForm() {
+            const form = document.getElementById('new-post-form');
+            form.style.display = form.style.display === 'none' ? 'block' : 'none';
+        }
+        function changePageSize(size) {
+            let url = '?page=0&size=' + size;
+            if (/*[[${selectedTag}]]*/ '') {
+                url += '&tag=' + encodeURIComponent(/*[[${selectedTag}]]*/ '');
+            }
+            window.location.href = url;
+        }
+        function filterByTag(selectElement) {
+            const tag = selectElement.value;
+            let url = '?page=0&size=' + /*[[${pageSize}]]*/ 0;
+            if (tag) {
+                url += '&tag=' + encodeURIComponent(tag);
+            } else {
+                url = '?page=0&size=' + /*[[${pageSize}]]*/ 0;
+            }
+            window.location.href = url;
+        }
+    </script>
+</head>
+<body>
+<h1>Лента постов</h1>
+<div>
+    <ul>
+        <li th:each="post : ${posts}" style="border-bottom: 1px solid #ccc; padding: 20px;">
+            <h2><a th:href="@{/posts/{id}(id=${post.id})}" th:text="${post.title}"></a></h2>
+            <div th:if="${post.imagePath != null}">
+                <img th:src="@{'/uploads/' + ${post.imagePath}}" alt="Изображение" style="max-width: 100%; height: auto; max-height: 200px;">
+            </div>
+            <div th:if="${post.imagePath == null}">
+                <p>  </p>
+            </div>
+            <p th:utext="${#strings.replace(#strings.replace(post.previewText, '\r\n', '<br>'), '\n', '<br>')}"
+               style="white-space: pre-wrap;"></p>
+            <div>
+                <span>Комментарии: [[${post.commentCount}]]</span> |
+                <span>Лайки: [[${post.likes}]]</span>
+            </div>
+            <div>
+                <h4>Теги</h4>
+                <ul>
+                    <li th:each="tag : ${post.tags}" th:text="${tag.name}"></li>
+                </ul>
+            </div>
+        </li>
+    </ul>
+</div>
+<div>
+    <span th:text="'Страница ' + (${currentPage + 1}) + ' из ' + ${totalPages}"></span>
+    <nav>
+        <ul>
+            <li th:if="${currentPage > 0}">
+                <a th:href="@{/posts(page=${currentPage - 1}, size=${pageSize}, tag=${selectedTag != null ? selectedTag : ''})}">Предыдущая</a>
+            </li>
+            <li th:if="${currentPage < totalPages - 1}">
+                <a th:href="@{/posts(page=${currentPage + 1}, size=${pageSize}, tag=${selectedTag != null ? selectedTag : ''})}">Следующая</a>
+            </li>
+        </ul>
+    </nav>
+</div>
+<div>
+    <label for="pageSizeSelector">Постов на странице:</label>
+    <div>
+        <button onclick="changePageSize(10)" th:class="${pageSize == 10 ? 'active' : ''}">10</button>
+        <button onclick="changePageSize(20)" th:class="${pageSize == 20 ? 'active' : ''}">20</button>
+        <button onclick="changePageSize(50)" th:class="${pageSize == 50 ? 'active' : ''}">50</button>
+    </div>
+</div>
+<div>
+    <label for="tagSelector">Фильтр по тегу:</label>
+    <select id="tagSelector" onchange="filterByTag(this)">
+        <option value="" th:selected="${selectedTag == null}">Все посты</option>
+        <option th:each="tag : ${tags}" th:value="${tag.name}"
+                th:selected="${selectedTag == tag.name}" th:text="${tag.name}"></option>
+    </select>
+</div>
+<button onclick="togglePostForm()">Добавить пост</button>
+<div id="new-post-form" style="display: none;">
+    <form th:action="@{/posts}" method="post" enctype="multipart/form-data">
+        <label for="title">Название поста:</label>
+        <input type="text" id="title" name="title" required>
+        <label for="text">Текст поста:</label>
+        <textarea id="text" name="text" required></textarea>
+        <label for="tags">Теги (через запятую):</label>
+        <input type="text" id="tags" name="tags">
+        <label for="image">Загрузить изображение:</label>
+        <input type="file" id="image" name="image" accept=".jpg, .jpeg, .png">
+        <button type="submit">Сохранить пост</button>
+    </form>
+</div>
+</body>
+</html>
