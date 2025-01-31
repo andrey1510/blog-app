@@ -15,7 +15,7 @@ import org.springframework.web.context.WebApplicationContext;
 @ExtendWith(SpringExtension.class)
 @WebAppConfiguration
 @ContextConfiguration(classes = {TestWebConfiguration.class, TestDatasourceConfig.class})
-public abstract class IntegrationTest {
+public abstract class AbstractControllerIntegrationTest {
 
     @Autowired
     protected WebApplicationContext webApplicationContext;

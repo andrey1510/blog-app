@@ -3,9 +3,6 @@ package com.blog.services;
 import com.blog.dto.PostDto;
 import com.blog.models.Post;
 import org.springframework.data.domain.Page;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 public interface PostService {
 

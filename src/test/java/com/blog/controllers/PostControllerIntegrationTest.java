@@ -30,7 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class PostControllerIntegrationTest extends IntegrationTest {
+public class PostControllerIntegrationTest extends AbstractControllerIntegrationTest {
 
     @Autowired
     private PostService postService;
