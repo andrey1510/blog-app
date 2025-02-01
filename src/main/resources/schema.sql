@@ -3,8 +3,10 @@ CREATE TABLE tags (
                       name VARCHAR(255) NOT NULL
 );
 
+CREATE SEQUENCE post_seq START WITH 1 INCREMENT BY 1;
+
 CREATE TABLE posts (
-                       id INT PRIMARY KEY AUTO_INCREMENT,
+                       id INT PRIMARY KEY,
                        title VARCHAR(255) NOT NULL,
                        text TEXT NOT NULL,
                        image_path VARCHAR(255),
