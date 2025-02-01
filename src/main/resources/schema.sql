@@ -1,5 +1,7 @@
+CREATE SEQUENCE tag_seq START WITH 1 INCREMENT BY 1;
+
 CREATE TABLE tags (
-                      id INT PRIMARY KEY AUTO_INCREMENT,
+                      id INT PRIMARY KEY,
                       name VARCHAR(255) NOT NULL
 );
 
@@ -13,8 +15,10 @@ CREATE TABLE posts (
                        likes INT DEFAULT 0
 );
 
+CREATE SEQUENCE comment_seq START WITH 1 INCREMENT BY 1;
+
 CREATE TABLE comments (
-                          id INT PRIMARY KEY AUTO_INCREMENT,
+                          id INT PRIMARY KEY,
                           text TEXT NOT NULL,
                           post_id INT NOT NULL,
                           FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE
