@@ -64,7 +64,7 @@
     </ul>
 </div>
 <div>
-    <form th:action="@{/posts/delete/{id}(id=${post.id})}" method="post">
+    <form th:action="@{/posts/{id}/delete(id=${post.id})}" method="post">
         <button type="submit">Удалить пост</button>
     </form>
     <button onclick="togglePostForm()">Редактировать пост</button>
@@ -83,7 +83,7 @@
                   style="white-space: pre-wrap; cursor: pointer;"
                   th:onclick="|enableCommentEdit(${comment.id})|"></span>
             <input th:id="'comment-input-' + ${comment.id}" type="text" style="display: none;" data-comment-id="${comment.id}">
-            <form th:action="@{/posts/comments/delete/{id}(id=${comment.id})}" method="post">
+            <form th:action="@{/posts/comments/{id}/delete(id=${comment.id})}" method="post">
                 <button type="submit">Удалить комментарий</button>
             </form>
         </li>
@@ -94,13 +94,13 @@
     <button type="submit">Добавить комментарий</button>
 </form>
 <div>
-    <form th:action="@{/posts/like/{id}(id=${post.id})}" method="post">
+    <form th:action="@{/posts/{id}/like(id=${post.id})}" method="post">
         <button type="submit">Поставить лайк (всего лайков: [[${post.likes}]])</button>
     </form>
 </div>
 
 <div id="edit-post-form" style="display: none;">
-    <form th:action="@{/posts/update/{id}(id=${post.id})}" method="post" enctype="multipart/form-data" th:object="${postDto}">
+    <form th:action="@{/posts/{id}/update(id=${post.id})}" method="post" enctype="multipart/form-data" th:object="${postDto}">
         <label for="title">Название поста:</label>
         <input type="text" id="title" name="title" required>
         <label for="text">Текст поста:</label>

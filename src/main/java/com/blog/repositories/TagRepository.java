@@ -39,9 +39,4 @@ public class TagRepository {
             jdbcTemplate.update(updateSql, tag.getName(), tag.getId());
         }
     }
-
-    public void deleteById(Integer id) {
-        String sql = "DELETE FROM tags WHERE id = ?";
-        jdbcTemplate.update(sql, id);
-    }
 }
