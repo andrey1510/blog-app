@@ -19,6 +19,5 @@ public class Post {
     private String imagePath;
     private Set<Tag> tags;
     private int likes;
-    // @JsonIgnore
     private List<Comment> comments;
 }
