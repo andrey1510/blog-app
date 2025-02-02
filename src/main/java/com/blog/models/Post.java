@@ -1,6 +1,5 @@
 package com.blog.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,6 +19,6 @@ public class Post {
     private String imagePath;
     private Set<Tag> tags;
     private int likes;
-    @JsonIgnore
+    // @JsonIgnore
     private List<Comment> comments;
 }
