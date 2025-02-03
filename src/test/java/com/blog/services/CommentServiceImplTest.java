@@ -14,12 +14,11 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -63,7 +62,7 @@ class CommentServiceImplTest {
 
     @Test
     public void testCreateComment() {
-        when(postRepository.findById(1)).thenReturn(Optional.of(post));
+        when(postRepository.findById(1)).thenReturn(post);
         when(commentRepository.save(any(Comment.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         Comment result = commentService.createComment(1, commentDto);
@@ -75,7 +74,7 @@ class CommentServiceImplTest {
 
     @Test
     public void testUpdateComment() {
-        when(commentRepository.findById(1)).thenReturn(Optional.of(comment));
+        when(commentRepository.findById(1)).thenReturn(comment);
 
         commentService.updateComment(commentUpdateDto);
 
@@ -85,18 +84,17 @@ class CommentServiceImplTest {
 
     @Test
     public void testDeleteComment() {
-        when(commentRepository.findById(1)).thenReturn(Optional.of(comment));
-        doNothing().when(commentRepository).delete(comment);
+        when(commentRepository.findById(1)).thenReturn(comment);
+        doNothing().when(commentRepository).deleteById(anyInt());
 
         commentService.deleteComment(1);
 
-        verify(postRepository, times(1)).save(post);
-        verify(commentRepository, times(1)).delete(comment);
+        verify(commentRepository, times(1)).deleteById(anyInt());
     }
 
     @Test
     public void testLikePost() {
-        when(postRepository.findById(1)).thenReturn(Optional.of(post));
+        when(postRepository.findById(1)).thenReturn(post);
 
         commentService.likePost(1);
 
@@ -106,7 +104,7 @@ class CommentServiceImplTest {
 
     @Test
     public void testGetPostIdByCommentId() {
-        when(commentRepository.findById(1)).thenReturn(Optional.of(comment));
+        when(commentRepository.findById(1)).thenReturn(comment);
 
         Integer postId = commentService.getPostIdByCommentId(1);
 

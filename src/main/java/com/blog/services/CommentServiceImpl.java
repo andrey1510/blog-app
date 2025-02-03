@@ -10,7 +10,6 @@ import com.blog.models.Post;
 import org.springframework.stereotype.Service;
 import com.blog.repositories.CommentRepository;
 import com.blog.repositories.PostRepository;
-import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
@@ -21,51 +20,44 @@ public class CommentServiceImpl implements CommentService {
     private final PostRepository postRepository;
 
     @Override
-    @Transactional
-    public Comment createComment(Integer id, CommentDto commentDto) {
-        Post post = postRepository.findById(id).orElseThrow(() -> new PostNotFoundException("Пост не найден."));
-        return commentRepository.save(Comment.builder()
-            .text(commentDto.getText())
-            .post(post)
-            .build());
+    public Integer getPostIdByCommentId(Integer commentId) {
+        Comment comment = commentRepository.findById(commentId);
+        if (comment == null) throw new CommentNotFoundException("Комментарий не найден.");
+        return comment.getPost().getId();
     }
 
     @Override
-    @Transactional
+    public Comment createComment(Integer postId, CommentDto commentDto) {
+        Post post = postRepository.findById(postId);
+        if (post == null) throw new PostNotFoundException("Пост не найден.");
+        Comment comment = Comment.builder()
+            .text(commentDto.getText())
+            .post(post)
+            .build();
+        commentRepository.save(comment);
+        return comment;
+    }
+
+    @Override
     public void updateComment(CommentUpdateDto commentUpdateDto) {
-        Comment comment = commentRepository.findById(commentUpdateDto.getId())
-            .orElseThrow(() -> new CommentNotFoundException("Комментарий не найден."));
+        Comment comment = commentRepository.findById(commentUpdateDto.getId());
+        if (comment == null) throw new CommentNotFoundException("Комментарий не найден.");
         comment.setText(commentUpdateDto.getText());
         commentRepository.save(comment);
     }
 
     @Override
-    @Transactional
     public void deleteComment(Integer commentId) {
-        Comment comment = commentRepository.findById(commentId)
-            .orElseThrow(() -> new CommentNotFoundException("Комментарий не найден."));
-
-        Post post = comment.getPost();
-        post.getComments().remove(comment);
-        postRepository.save(post);
-
-        commentRepository.delete(comment);
+        Comment comment = commentRepository.findById(commentId);
+        if (comment == null) throw new CommentNotFoundException("Комментарий не найден.");
+        commentRepository.deleteById(commentId);
     }
 
     @Override
-    @Transactional
     public void likePost(Integer postId) {
-        Post post = postRepository.findById(postId)
-            .orElseThrow(() -> new RuntimeException("Пост не найден."));
+        Post post = postRepository.findById(postId);
+        if (post == null) throw new PostNotFoundException("Пост не найден.");
         post.setLikes(post.getLikes() + 1);
         postRepository.save(post);
     }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Integer getPostIdByCommentId(Integer commentId) {
-        return commentRepository.findById(commentId)
-            .orElseThrow(() -> new RuntimeException("Комментарий не найден.")).getPost().getId();
-    }
-
 }
