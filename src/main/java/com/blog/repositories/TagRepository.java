@@ -26,7 +26,7 @@ public class TagRepository {
         return tags.isEmpty() ? Optional.empty() : Optional.of(tags.get(0));
     }
 
-    public void save(Tag tag) {
+    public Tag save(Tag tag) {
         if (tag.getId() == null) {
             String generateIdSql = "CALL NEXT VALUE FOR tag_seq";
             Integer generatedId = jdbcTemplate.queryForObject(generateIdSql, Integer.class);
@@ -38,5 +38,6 @@ public class TagRepository {
             String updateSql = "UPDATE tags SET name = ? WHERE id = ?";
             jdbcTemplate.update(updateSql, tag.getName(), tag.getId());
         }
+        return tag;
     }
 }

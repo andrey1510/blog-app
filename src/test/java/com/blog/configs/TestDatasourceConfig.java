@@ -1,23 +1,22 @@
 package com.blog.configs;
 
-import jakarta.persistence.EntityManagerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
-import org.springframework.orm.jpa.JpaTransactionManager;
-import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
-import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
+import org.springframework.jdbc.datasource.init.DatabasePopulator;
+import org.springframework.jdbc.datasource.init.DatabasePopulatorUtils;
+import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.sql.DataSource;
-import java.util.Properties;
 
 @Configuration
-@EnableJpaRepositories(basePackages = "com.blog")
 @EnableTransactionManagement
 @PropertySource("classpath:test-application.properties")
 public class TestDatasourceConfig {
@@ -35,27 +34,28 @@ public class TestDatasourceConfig {
         dataSource.setUrl(environment.getProperty("spring.datasource.url"));
         dataSource.setUsername(environment.getProperty("spring.datasource.username"));
         dataSource.setPassword(environment.getProperty("spring.datasource.password"));
+
+        DatabasePopulator databasePopulator = createDatabasePopulator();
+        DatabasePopulatorUtils.execute(databasePopulator, dataSource);
+
         return dataSource;
     }
 
     @Bean
-    public LocalContainerEntityManagerFactoryBean entityManagerFactory(DataSource dataSource) {
-        LocalContainerEntityManagerFactoryBean entityManager = new LocalContainerEntityManagerFactoryBean();
-        entityManager.setDataSource(dataSource);
-        entityManager.setPackagesToScan("com.blog");
-        entityManager.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
-        Properties jpaProperties = new Properties();
-        jpaProperties.put("hibernate.hbm2ddl.auto", environment.getProperty("spring.jpa.hibernate.ddl-auto"));
-        jpaProperties.put("hibernate.dialect", environment.getProperty("spring.jpa.properties.hibernate.dialect"));
-        jpaProperties.put("hibernate.show_sql", environment.getProperty("spring.jpa.show-sql"));
-        entityManager.setJpaProperties(jpaProperties);
-        return entityManager;
+    public JdbcTemplate jdbcTemplate(DataSource dataSource) {
+        return new JdbcTemplate(dataSource);
     }
 
     @Bean
-    public PlatformTransactionManager transactionManager(EntityManagerFactory entityManagerFactory) {
-        JpaTransactionManager transactionManager = new JpaTransactionManager();
-        transactionManager.setEntityManagerFactory(entityManagerFactory);
-        return transactionManager;
+    public PlatformTransactionManager transactionManager(DataSource dataSource) {
+        return new DataSourceTransactionManager(dataSource);
+    }
+
+    private DatabasePopulator createDatabasePopulator() {
+        ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
+        populator.addScript(new ClassPathResource("schema.sql"));
+        populator.setContinueOnError(false);
+        populator.setIgnoreFailedDrops(true);
+        return populator;
     }
 }

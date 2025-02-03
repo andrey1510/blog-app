@@ -35,7 +35,7 @@ public class CommentRepository {
         return comment;
     }
 
-    public void save(Comment comment) {
+    public Comment save(Comment comment) {
         if (comment.getId() == null) {
             String generateIdSql = "CALL NEXT VALUE FOR comment_seq";
             Integer generatedId = jdbcTemplate.queryForObject(generateIdSql, Integer.class);
@@ -52,6 +52,7 @@ public class CommentRepository {
             String updateSql = "UPDATE comments SET text = ? WHERE id = ?";
             jdbcTemplate.update(updateSql, comment.getText(), comment.getId());
         }
+        return comment;
     }
 
     public void deleteById(Integer id) {

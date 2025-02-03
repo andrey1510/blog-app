@@ -4,28 +4,28 @@ import com.blog.configs.TestDatasourceConfig;
 import com.blog.configs.TestWebConfiguration;
 import com.blog.models.Comment;
 import com.blog.models.Post;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ExtendWith(SpringExtension.class)
 @WebAppConfiguration
 @ContextConfiguration(classes = {TestWebConfiguration.class, TestDatasourceConfig.class})
 @Transactional
+@Rollback
 public class CommentRepositoryIntegrationTest {
 
     @Autowired
@@ -54,12 +54,6 @@ public class CommentRepositoryIntegrationTest {
         commentRepository.save(comment1);
     }
 
-    @AfterEach
-    void tearDown(){
-        commentRepository.deleteAll();
-        postRepository.deleteAll();
-    }
-
     @Test
     void testSave() {
         Comment newComment = Comment.builder()
@@ -67,20 +61,24 @@ public class CommentRepositoryIntegrationTest {
             .post(post1)
             .build();
         Comment savedComment = commentRepository.save(newComment);
+
         assertNotNull(savedComment.getId());
+        assertEquals(newComment.getText(), savedComment.getText());
     }
 
     @Test
     void testFindById() {
-        Optional<Comment> foundComment = commentRepository.findById(comment1.getId());
-        assertTrue(foundComment.isPresent());
-        assertEquals(comment1, foundComment.get());
+        Comment foundComment = commentRepository.findById(comment1.getId());
+        assertNotNull(foundComment);
+        assertEquals(comment1.getText(), foundComment.getText());
     }
 
     @Test
     void testDeleteById() {
         commentRepository.deleteById(comment1.getId());
-        Optional<Comment> deletedComment = commentRepository.findById(comment1.getId());
-        assertFalse(deletedComment.isPresent());
+
+        assertThrows(EmptyResultDataAccessException.class, () -> {
+            commentRepository.findById(comment1.getId());
+        });
     }
 }

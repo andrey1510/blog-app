@@ -90,7 +90,13 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
-            <version>5.11.2</version>
+            <version>5.10.2</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>5.10.2</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -117,6 +123,15 @@
                 <plugin>
                     <artifactId>maven-war-plugin</artifactId>
                     <version>3.4.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>3.5.0</version>
+                    <configuration>
+                        <parallel>none</parallel>
+                        <reuseForks>false</reuseForks>
+                    </configuration>
                 </plugin>
             </plugins>
         </pluginManagement>
