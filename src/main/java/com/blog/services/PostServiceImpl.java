@@ -2,7 +2,6 @@ package com.blog.services;
 
 import com.blog.dto.PostDto;
 import com.blog.exceptions.MaxImageSizeExceededException;
-import com.blog.exceptions.PostNotFoundException;
 import com.blog.exceptions.WrongImageTypeException;
 import com.blog.models.Tag;
 import com.blog.repositories.TagRepository;
@@ -10,12 +9,10 @@ import com.blog.utils.ImageUtils;
 import lombok.RequiredArgsConstructor;
 import com.blog.models.Post;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import com.blog.repositories.PostRepository;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -23,6 +20,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -38,28 +36,26 @@ public class PostServiceImpl implements PostService {
     private static final String UPLOAD_DIRECTORY = System.getProperty("catalina.base") + "/uploads/";
 
     @Override
-    @Transactional(readOnly = true)
     public Page<Post> getPostsByTag(String tag, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
-        return postRepository.findByTagsName(tag, pageable);
+        List<Post> posts = postRepository.findByTagsName(tag, page, size);
+        long totalPosts = postRepository.countPostsByTag(tag);
+        return new PageImpl<>(posts, PageRequest.of(page, size), totalPosts);
     }
 
     @Override
-    @Transactional(readOnly = true)
     public Page<Post> getAllPosts(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
-        return postRepository.findAll(pageable);
+        List<Post> posts = postRepository.findAll(page, size);
+        long totalPosts = postRepository.countAllPosts();
+        return new PageImpl<>(posts, PageRequest.of(page, size), totalPosts);
     }
 
     @Override
-    @Transactional(readOnly = true)
     public Post getPostById(Integer id) {
-        return postRepository.findById(id).orElseThrow(() -> new PostNotFoundException("Пост не найден."));
+        return postRepository.findById(id);
     }
 
-    @Transactional
+    @Override
     public Post createPost(PostDto postDto) {
-
         String uniqueFileName = null;
         MultipartFile image = postDto.getImage();
         if (image != null && !image.isEmpty()) {
@@ -68,34 +64,35 @@ public class PostServiceImpl implements PostService {
             saveImage(image, uniqueFileName);
         }
 
+        Set<Tag> tags = processTags(postDto.getTags());
+
         Post post = Post.builder()
             .title(postDto.getTitle())
             .text(postDto.getText())
-            .tags(processTags(postDto.getTags()))
+            .tags(tags)
             .imagePath(uniqueFileName)
             .likes(0)
             .build();
-        return postRepository.save(post);
+
+        postRepository.save(post);
+        postRepository.savePostTags(post.getId(), tags);
+        return post;
     }
 
     @Override
-    @Transactional
     public Post updatePost(Integer id, PostDto postDto) {
         Post post = getPostById(id);
-        String uniqueFileName = post.getImagePath();
 
+        String uniqueFileName = post.getImagePath();
         if (postDto.getImage() == null || postDto.getImage().isEmpty()) {
             if (post.getImagePath() != null) {
                 ImageUtils.deleteImageIfExists(post.getImagePath());
                 uniqueFileName = null;
             }
-        }
-
-        MultipartFile newImage = postDto.getImage();
-        if (newImage != null && !newImage.isEmpty()) {
-            validateImage(newImage);
-            uniqueFileName = ImageUtils.generateUniqueImageName(newImage.getOriginalFilename());
-            saveImage(newImage, uniqueFileName);
+        } else {
+            validateImage(postDto.getImage());
+            uniqueFileName = ImageUtils.generateUniqueImageName(postDto.getImage().getOriginalFilename());
+            saveImage(postDto.getImage(), uniqueFileName);
             ImageUtils.deleteImageIfExists(post.getImagePath());
         }
 
@@ -104,13 +101,18 @@ public class PostServiceImpl implements PostService {
         post.setTags(processTags(postDto.getTags()));
         post.setImagePath(uniqueFileName);
 
-        return postRepository.save(post);
+        postRepository.save(post);
+
+        postRepository.deletePostTags(post.getId());
+        postRepository.savePostTags(post.getId(), post.getTags());
+
+        return post;
     }
 
     @Override
-    @Transactional
     public void deletePost(Integer id) {
         ImageUtils.deleteImageIfExists(getPostById(id).getImagePath());
+        postRepository.deletePostTags(id);
         postRepository.deleteById(id);
     }
 
@@ -118,10 +120,8 @@ public class PostServiceImpl implements PostService {
     public String getPreviewText(Post post) {
         String[] paragraphs = post.getText().split("\n\n");
         StringBuilder previewText = new StringBuilder();
-
         String[] lines = paragraphs[0].split("\n");
         int lineCount = 0;
-
         for (String line : lines) {
             if (lineCount >= 3) break;
             previewText.append(line).append("\n");
@@ -132,15 +132,13 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public int getCommentCount(Post post) {
-        if (post.getComments() == null) return 0;
-        return post.getComments().size();
+        return postRepository.getCommentCount(post.getId());
     }
 
     private void validateImage(MultipartFile file) {
         if (!ImageUtils.isValidImageExtension(file.getOriginalFilename())) {
             throw new WrongImageTypeException("Недопустимый формат изображения, разрешены: jpeg, jpg, png.");
         }
-
         if (!ImageUtils.isValidImageSize(file.getSize())) {
             throw new MaxImageSizeExceededException("Размер файла не должен превышать 3 МБ.");
         }
@@ -157,9 +155,7 @@ public class PostServiceImpl implements PostService {
     }
 
     private Set<Tag> processTags(String tagString) {
-
         if (tagString == null || tagString.trim().isEmpty()) return new HashSet<>();
-
         Set<String> tagNames = Stream.of(tagString.split(","))
             .map(String::trim)
             .distinct()
@@ -167,18 +163,16 @@ public class PostServiceImpl implements PostService {
             .collect(Collectors.toSet());
 
         Set<Tag> tags = new HashSet<>();
-
         for (String tagName : tagNames) {
             Optional<Tag> tag = tagRepository.findByName(tagName);
-            if (tag.isPresent()) tags.add(tag.get());
-            else {
-                Tag newTag = new Tag();
-                newTag.setName(tagName);
+            if (tag.isPresent()) {
+                tags.add(tag.get());
+            } else {
+                Tag newTag = Tag.builder().name(tagName).build();
                 tagRepository.save(newTag);
                 tags.add(newTag);
             }
         }
         return tags;
     }
-
 }

@@ -96,7 +96,7 @@ public class PostController {
         return "redirect:/posts";
     }
 
-    @PostMapping("/update/{id}")
+    @PostMapping("/{id}/update")
     public String updatePost(@PathVariable("id") Integer id,
                              @ModelAttribute PostDto postDto,
                              @RequestParam(value = "image", required = false) MultipartFile image) {
@@ -105,7 +105,7 @@ public class PostController {
         return "redirect:/posts/" + id;
     }
 
-    @PostMapping("/delete/{id}")
+    @PostMapping("/{id}/delete")
     public String deletePost(@PathVariable("id") Integer id) {
         postService.deletePost(id);
         return "redirect:/posts";
@@ -136,7 +136,7 @@ public class PostController {
         }
     }
 
-    @PostMapping("/comments/delete/{id}")
+    @PostMapping("/comments/{id}/delete")
     public String deleteComment(@PathVariable("id") Integer commentId) {
         Integer postId = commentService.getPostIdByCommentId(commentId);
         commentService.deleteComment(commentId);
@@ -145,7 +145,7 @@ public class PostController {
 
     // Проставление лайка
 
-    @PostMapping("/like/{id}")
+    @PostMapping("/{id}/like")
     public String likePost(@PathVariable("id") Integer id) {
         commentService.likePost(id);
         return "redirect:/posts/" + id;
