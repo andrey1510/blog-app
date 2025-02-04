@@ -5,7 +5,7 @@ __README__
 изображением и тегами; создания, удаления и редактирования комментариев; проставления лайков; фильтрации 
 постов по тегам и разбиения постов по страницам.
 
-Использованный стек: Java SE 21, Spring Framework, JPA, Maven, Lombok, Thymeleaf, H2, JUnit 5, Mockito.
+Использованный стек: Java SE 21, Spring Boot, JDBC, Maven, Lombok, Thymeleaf, H2, JUnit 5, Mockito.
 
 Установка и запуск:
 -----------------------------------
