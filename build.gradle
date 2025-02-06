@@ -5,12 +5,20 @@ plugins {
 }
 
 group = 'com.blog'
-version = '1.0'
+version = '2.0'
 
 java {
 	toolchain {
 		languageVersion = JavaLanguageVersion.of(21)
 	}
+}
+
+bootJar {
+	archiveFileName = 'blog-app.jar'
+}
+
+jar {
+	enabled = false
 }
 
 configurations {
