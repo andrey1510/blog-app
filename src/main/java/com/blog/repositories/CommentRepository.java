@@ -1,10 +1,12 @@
 package com.blog.repositories;
 
 import com.blog.models.Comment;
-import com.blog.models.Post;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 
 @Repository
@@ -20,19 +22,7 @@ public class CommentRepository {
                 FROM comments c 
                 WHERE c.id = ?
                 """;
-        Comment comment = jdbcTemplate.queryForObject(commentSql, (rs, rowNum) -> {
-            Comment c = new Comment();
-            c.setId(rs.getInt("id"));
-            c.setText(rs.getString("text"));
-
-            Integer postId = rs.getInt("post_id");
-            Post post = postRepository.findById(postId);
-
-            c.setPost(post);
-            return c;
-        }, id);
-
-        return comment;
+        return jdbcTemplate.queryForObject(commentSql, this::mapCommentRowToCommentEntity, id);
     }
 
     public Comment save(Comment comment) {
@@ -58,5 +48,13 @@ public class CommentRepository {
     public void deleteById(Integer id) {
         String sql = "DELETE FROM comments WHERE id = ?";
         jdbcTemplate.update(sql, id);
+    }
+
+    private Comment mapCommentRowToCommentEntity(ResultSet rs, int rowNum) throws SQLException {
+        Comment comment = new Comment();
+        comment.setId(rs.getInt("id"));
+        comment.setText(rs.getString("text"));
+        comment.setPost(postRepository.findById(rs.getInt("post_id")));
+        return comment;
     }
 }
