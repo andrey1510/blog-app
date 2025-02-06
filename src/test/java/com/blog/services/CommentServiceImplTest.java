@@ -43,6 +43,7 @@ class CommentServiceImplTest {
 
     @BeforeEach
     public void setUp() {
+
         post = new Post();
         post.setId(1);
         post.setComments(new ArrayList<>());

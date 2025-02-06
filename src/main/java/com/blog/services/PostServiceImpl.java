@@ -8,6 +8,7 @@ import com.blog.repositories.TagRepository;
 import com.blog.utils.ImageUtils;
 import lombok.RequiredArgsConstructor;
 import com.blog.models.Post;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -30,10 +31,11 @@ import java.util.stream.Stream;
 @RequiredArgsConstructor
 public class PostServiceImpl implements PostService {
 
+    @Value("${images.upload-directory}")
+    private String uploadDirectory;
+
     private final PostRepository postRepository;
     private final TagRepository tagRepository;
-
-    private static final String UPLOAD_DIRECTORY = System.getProperty("catalina.base") + "/uploads/";
 
     @Override
     public Page<Post> getPostsByTag(String tag, int page, int size) {
@@ -146,7 +148,7 @@ public class PostServiceImpl implements PostService {
 
     private void saveImage(MultipartFile file, String relativePath) {
         try {
-            Path fullPath = Paths.get(UPLOAD_DIRECTORY, relativePath);
+            Path fullPath = Paths.get(System.getProperty("catalina.base") + uploadDirectory, relativePath);
             Files.createDirectories(fullPath.getParent());
             file.transferTo(fullPath);
         } catch (IOException e) {

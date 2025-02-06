@@ -30,6 +30,7 @@ public class TagServiceImplTest {
     private TagServiceImpl tagService;
 
     private Tag tag1;
+
     private Tag tag2;
 
     @BeforeEach

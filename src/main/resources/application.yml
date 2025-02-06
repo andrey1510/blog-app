@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: blog-app
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    username: sa
+    password: ""
+  thymeleaf:
+    prefix: classpath:/templates/
+    suffix: .html
+    mode: HTML
+    encoding: UTF-8
+  servlet:
+    multipart:
+      max-file-size: 3MB
+      max-request-size: 10MB
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:schema.sql
+images:
+  upload-directory: "/uploads/"
