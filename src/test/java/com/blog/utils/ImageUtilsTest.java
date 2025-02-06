@@ -57,5 +57,4 @@ public class ImageUtilsTest {
         ImageUtils.deleteImageIfExists(oldFilePath.toString());
         assertFalse(Files.exists(oldFilePath));
     }
-
 }

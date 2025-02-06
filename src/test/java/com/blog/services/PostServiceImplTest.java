@@ -51,6 +51,7 @@ public class PostServiceImplTest {
 
     @BeforeEach
     public void setUp() {
+
         post = Post.builder()
             .id(1)
             .title("Title 1")

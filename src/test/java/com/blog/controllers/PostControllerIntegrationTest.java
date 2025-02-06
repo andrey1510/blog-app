@@ -1,7 +1,5 @@
 package com.blog.controllers;
 
-import com.blog.configs.TestDatasourceConfig;
-import com.blog.configs.TestWebConfiguration;
 import com.blog.dto.CommentDto;
 import com.blog.dto.PostDto;
 import com.blog.models.Comment;
@@ -14,18 +12,13 @@ import com.blog.services.PostService;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.test.annotation.Rollback;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.context.WebApplicationContext;
 
 import java.util.Collections;
 import java.util.List;
@@ -42,13 +35,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@ExtendWith(SpringExtension.class)
-@WebAppConfiguration
-@ContextConfiguration(classes = {TestWebConfiguration.class, TestDatasourceConfig.class})
+@ActiveProfiles("test")
+@SpringBootTest
+@AutoConfigureMockMvc
 public class PostControllerIntegrationTest {
 
     @Autowired
-    private WebApplicationContext webApplicationContext;
+    private MockMvc mockMvc;
 
     @Autowired
     private PostService postService;
@@ -62,14 +55,11 @@ public class PostControllerIntegrationTest {
     @Autowired
     private CommentRepository commentRepository;
 
-    private MockMvc mockMvc;
-
     private PostDto postDto;
     private MockMultipartFile image;
 
     @BeforeEach
     void setUp() {
-        mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
 
         Post post1 = Post.builder()
             .title("Title 1")
