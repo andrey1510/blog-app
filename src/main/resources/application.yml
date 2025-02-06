@@ -19,3 +19,5 @@ spring:
     init:
       mode: always
       schema-locations: classpath:schema.sql
+images:
+  upload-directory: "/uploads/"
